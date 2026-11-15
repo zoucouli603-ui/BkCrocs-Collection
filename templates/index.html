@@ -142,6 +142,27 @@
             gap: 4px;
         }
         .product-btn:hover { background: #B8860B; }
+        .stock-badge {
+            position: absolute;
+            left: 50%;
+            bottom: 6px;
+            z-index: 2;
+            transform: translateX(-50%);
+            padding: 2px 10px;
+            font-size: 9px;
+            font-weight: 800;
+            white-space: nowrap;
+            border-radius: 9999px;
+            background: rgba(17,17,17,.92);
+            color: #D4AF37;
+            border: 1px solid rgba(212,175,55,.6);
+        }
+        .product-card[data-status] .product-media { cursor: not-allowed; }
+        .product-card[data-status] .product-media img { filter: grayscale(1) brightness(.55); }
+        .product-card[data-status] .product-media:hover img { transform: none; }
+        .product-btn:disabled, .product-btn:disabled:hover { background: #2a2a2a; color: #8a8a8a; cursor: not-allowed; }
+        .stock-note { margin-top: 6px; font-size: 9px; line-height: 1.3; text-align: center; color: #a3a3a3; }
+        .stock-note a { color: #D4AF37; font-weight: 700; text-decoration: underline; }
         .modal-backdrop { background: rgba(17,17,17,.68); animation: fadeIn .2s ease both; }
         .modal-panel { animation: modalZoom .25s ease both; }
         .location-video { aspect-ratio: 9 / 16; max-height: 65vh; object-fit: cover; background: #111; transition: opacity .25s ease; }
@@ -423,7 +444,7 @@
             <article class="rounded-xl border border-white/10 bg-white/5 p-4">
                 <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-black text-dark">3</span>
                 <h4 class="mt-3 font-bold text-white">Livraison</h4>
-                <p class="mt-1 text-xs leading-5 text-gray-400">Livraison à domicile ou retrait à MOOD COFFEE, ENER ACI ou UIE.</p>
+                <p class="mt-1 text-xs leading-5 text-gray-400">Livraison à domicile ou retrait à Mood coffee, Ener Aci ou UIE.</p>
             </article>
         </div>
         <p class="mx-auto mt-5 max-w-md text-sm text-gray-400">Une question sur un modèle ? Écrivez-nous sur Snapchat pour confirmer votre taille, la disponibilité et la livraison.</p>
@@ -480,6 +501,9 @@
     <script>
         const IMG_DIR = '../static/images/';
         const VIDEO_FILES = ['lieu1.mp4', 'lieu2.mp4', 'lieu3.mp4'];
+        // Pour marquer un article indisponible, ajoutez à son objet : status: 'out-of-stock' (badge « Indisponible »)
+        // ou status: 'coming-back' (badge « Bientôt de retour »). Retirez la ligne pour le remettre en vente.
+        const STOCK_LABELS = { 'out-of-stock': 'Indisponible', 'coming-back': 'Bientôt de retour' };
         const PRODUCTS = [
             { id: 'spiderman-rouge', name: 'Crocs Spider-Man Rouge', category: 'crocs', price: 18000, images: ['crocs-spiderman-rouge-1.jpg.jpg', 'crocs-spiderman-rouge-2.jpg.jpg'], badge: { text: 'Nouveau' } },
             { id: 'spiderman-noir', name: 'Crocs Spider-Man Noir', category: 'crocs', price: 18000, images: ['crocs-spiderman-noir-1.jpg.jpg', 'crocs-spiderman-noir-2.jpg.jpg'], badge: { text: 'Tendance', style: 'dark' } },
@@ -517,16 +541,25 @@
             card.className = 'product-card';
             card.dataset.category = p.category;
 
+            const unavailable = Boolean(STOCK_LABELS[p.status]);
+            if (unavailable) card.dataset.status = p.status;
+
             const media = document.createElement('button');
             media.className = 'product-media';
             media.type = 'button';
-            media.setAttribute('aria-label', `Voir ${p.name}`);
+            media.setAttribute('aria-label', unavailable ? `${p.name} : ${STOCK_LABELS[p.status]}` : `Voir ${p.name}`);
 
-            if (p.badge) {
+            if (p.badge && !unavailable) {
                 const badge = document.createElement('span');
                 badge.className = 'product-badge' + (p.badge.style ? ' ' + p.badge.style : '');
                 badge.textContent = p.badge.text;
                 media.appendChild(badge);
+            }
+            if (unavailable) {
+                const stockBadge = document.createElement('span');
+                stockBadge.className = 'stock-badge';
+                stockBadge.textContent = STOCK_LABELS[p.status];
+                media.appendChild(stockBadge);
             }
 
             const img = document.createElement('img');
@@ -563,7 +596,20 @@
 
             const btn = document.createElement('button');
             btn.className = 'product-btn';
+            btn.type = 'button';
             btn.innerHTML = '<i class="fas fa-cart-plus"></i><span></span>';
+            if (unavailable) {
+                btn.disabled = true;
+                btn.querySelector('i').className = 'fas fa-ban';
+                btn.lastChild.textContent = 'RUPTURE TEMPORAIRE';
+                const note = document.createElement('p');
+                note.className = 'stock-note';
+                note.innerHTML = 'Retour en stock ? <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener">Demandez-nous sur Snapchat</a>';
+                const footer = document.createElement('div');
+                footer.append(btn, note);
+                card.append(info, footer);
+                return card;
+            }
             btn.lastChild.textContent = p.category === 'crocs' || p.category === 'claquettes' ? 'CHOISIR TAILLE' : 'AJOUTER';
             media.addEventListener('click', () => openProductModal(p));
             btn.addEventListener('click', () => openProductModal(p));
@@ -609,6 +655,7 @@
         for (let size = 36; size <= 45; size++) modalSize.insertAdjacentHTML('beforeend', `<option value="${size}">${size}</option>`);
 
         function openProductModal(product) {
+            if (STOCK_LABELS[product.status]) return;
             selectedProduct = product;
             selectedImage = 0;
             modalImage.src = IMG_DIR + product.images[selectedImage];
