@@ -163,6 +163,8 @@
         .product-btn:disabled, .product-btn:disabled:hover { background: #2a2a2a; color: #8a8a8a; cursor: not-allowed; }
         .stock-note { margin-top: 6px; font-size: 9px; line-height: 1.3; text-align: center; color: #a3a3a3; }
         .stock-note a { color: #D4AF37; font-weight: 700; text-decoration: underline; }
+        .bonus-banner { padding: 10px 12px; text-align: center; font-size: 12px; font-weight: 800; line-height: 1.4; color: #111; background: linear-gradient(90deg, #D4AF37, #f0d060, #D4AF37); border-radius: 12px; box-shadow: 0 4px 14px rgba(212,175,55,.25); }
+        .bonus-banner.hidden { display: none; }
         .modal-backdrop { background: rgba(17,17,17,.68); animation: fadeIn .2s ease both; }
         .modal-panel { animation: modalZoom .25s ease both; }
         .location-video { aspect-ratio: 9 / 16; max-height: 65vh; object-fit: cover; background: #111; transition: opacity .25s ease; }
@@ -286,8 +288,10 @@
         <div class="text-center space-y-1">
             <h3 class="text-lg font-bold text-white">Notre catalogue</h3>
             <div class="w-12 h-1 bg-gold mx-auto rounded-full"></div>
-            <p class="text-xs text-gray-500">Crocs, Claquettes, Jibbitz & Chaussettes disponibles</p>
+            <p class="text-xs text-gray-500">Crocs, Claquettes & Chaussettes disponibles</p>
         </div>
+
+        <div class="bonus-banner"><span>🎁 Bonus : 6 autocollants (Pinks) offerts pour chaque paire de Crocs achetée !</span></div>
 
         <!-- FILTRES DE CATEGORIES -->
         <div id="category-filters" class="flex space-x-2 overflow-x-auto pb-2 scrollbar-none">
@@ -343,7 +347,7 @@
             <button class="video-tab border rounded-full px-3 py-2 text-xs font-bold whitespace-nowrap" data-video="2">UIE</button>
         </div>
         <div class="mt-3 flex justify-center">
-            <video id="location-video" class="location-video w-full max-w-xs rounded-2xl shadow-md" controls playsinline preload="metadata"></video>
+            <video id="location-video" class="location-video w-full max-w-xs rounded-2xl shadow-md" controls playsinline muted loop preload="metadata"></video>
         </div>
     </section>
 
@@ -355,6 +359,7 @@
             <div class="mt-4">
                 <h3 id="modal-product-name" class="text-lg font-extrabold text-dark"></h3>
                 <p id="modal-product-price" class="mt-1 text-base font-extrabold text-dark"></p>
+                <div id="modal-bonus" class="bonus-banner mt-3 hidden"><span>🎁 Bonus : 6 autocollants (Pinks) offerts pour chaque paire de Crocs achetée !</span></div>
                 <div class="mt-4">
                     <label for="modal-size" class="mb-1 block text-xs font-bold text-gray-600">Pointure</label>
                     <select id="modal-size" class="dark-control w-full rounded-lg border px-3 py-2 text-sm">
@@ -389,6 +394,7 @@
             </div>
             <div id="payment-step-1" class="payment-content mt-5">
                 <p class="mb-3 text-xs text-gray-400">Vérifiez les articles, pointures et quantités avant de payer.</p>
+                <div id="payment-bonus" class="bonus-banner mb-3 hidden"><span>🎁 Bonus : 6 autocollants (Pinks) offerts pour chaque paire de Crocs achetée !</span></div>
                 <div id="payment-cart-summary" class="space-y-2"></div>
                 <div class="mt-4 grid gap-2 sm:grid-cols-2">
                     <input id="payment-customer-name" required type="text" placeholder="Nom complet" class="dark-control rounded-lg border px-3 py-2 text-sm">
@@ -524,9 +530,6 @@
             { id: 'nike-calm-slide', name: 'Claquette Nike Calm noire', category: 'claquettes', price: 10000, images: ['sandal-nike-1.jpg.jpg'], badge: { text: 'Nouveau', style: 'dark' } },
             { id: 'nike-calm-mule', name: 'Mule Nike Calm noire', category: 'claquettes', price: 12000, images: ['sandal-nike-2.jpg.jpg'] },
             { id: 'nike-victori', name: 'Claquette Nike Victori', category: 'claquettes', price: 10000, images: ['télécharger (17).jpg'], badge: { text: 'Populaire' } },
-            { id: 'jibbitz-rose', name: 'Pack Jibbitz rose', category: 'jibbitz', price: 2000, images: ['autocolant-1.jpg.jpg'] },
-            { id: 'jibbitz-halloween', name: 'Pack Jibbitz Halloween', category: 'jibbitz', price: 2000, images: ['autocolant-2.jpg.jpg'] },
-            { id: 'jibbitz-lettres', name: 'Pack Jibbitz lettres', category: 'jibbitz', price: 2000, images: ['autocolan-3.jpg.jpg'] },
             { id: 'jibbitz-classic', name: 'Jibbitz classique', category: 'jibbitz', price: 2000, images: ['jibbitz.png.jpg'] },
             { id: 'chaussettes-nike-blanches', name: 'Chaussettes Nike blanches', category: 'chaussettes', price: 3000, images: ['chaussettes-blanches-nike.jpg.jpg'] },
             { id: 'chaussettes-nike-noires', name: 'Chaussettes Nike noires', category: 'chaussettes', price: 3000, images: ['chaussettes-noirs-nike.jpg.jpg'] },
@@ -610,7 +613,7 @@
                 card.append(info, footer);
                 return card;
             }
-            btn.lastChild.textContent = p.category === 'crocs' || p.category === 'claquettes' ? 'PAYER MAINTENANT' : 'AJOUTER';
+            btn.lastChild.textContent = p.category === 'crocs' || p.category === 'claquettes' ? 'CHOISIR TAILLE' : 'AJOUTER';
             media.addEventListener('click', () => openProductModal(p));
             btn.addEventListener('click', () => openProductModal(p));
 
@@ -663,6 +666,7 @@
             document.getElementById('modal-product-name').textContent = product.name;
             document.getElementById('modal-product-price').textContent = formatPrice(product.price);
             modalSize.value = '';
+            document.getElementById('modal-bonus').classList.toggle('hidden', product.category !== 'crocs');
             document.getElementById('modal-quantity').value = 1;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -744,7 +748,7 @@
             paymentStep = 1;
             paymentReference = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
             renderPaymentSummary();
-            toggleCart(false);
+            document.getElementById('payment-bonus').classList.toggle('hidden', !items.some(item => item.product.category === 'crocs'));
             paymentModal.classList.remove('hidden');
             paymentModal.classList.add('flex');
             document.body.classList.add('overflow-hidden');
