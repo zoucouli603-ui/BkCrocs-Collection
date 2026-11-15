@@ -1,0 +1,745 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bk Collection Mali</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            DEFAULT: '#D4AF37',
+                            hover: '#B8860B',
+                            light: '#FFF9E6'
+                        },
+                        dark: '#111111'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #f5f5f5; }
+        .site-header { background: rgba(17,17,17,.94); border-color: rgba(212,175,55,.22); backdrop-filter: blur(14px); }
+        .brand-logo { height: 42px; width: 42px; object-fit: cover; border: 1px solid #D4AF37; border-radius: 9999px; }
+        .mobile-menu { background: #151515; border-color: rgba(212,175,55,.2); }
+        .dark-section { background: #111; border-color: rgba(212,175,55,.16); }
+
+        /* GRILLE PRODUITS - mobile-first : 2 colonnes, cartes compactes */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #f3f4f6;
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(17,17,17,.12); }
+        .product-card { background: #171717; border-color: #2a2a2a; box-shadow: 0 8px 20px rgba(0,0,0,.2); }
+        .product-media {
+            position: relative;
+            height: 130px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            background: #202020;
+            border-radius: 8px;
+        }
+        .product-media img {
+            display: block;
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+        .product-media:hover img { transform: scale(1.06); }
+        .product-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 1;
+            padding: 1px 6px;
+            font-size: 8px;
+            font-weight: 700;
+            border-radius: 9999px;
+            background: #D4AF37;
+            color: #111;
+        }
+        .product-badge.dark { background: #111; color: #D4AF37; }
+        .product-badge.promo { background: #dc2626; color: #fff; }
+        .product-count {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
+            z-index: 1;
+            padding: 1px 6px;
+            font-size: 8px;
+            border-radius: 9999px;
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+        }
+        .product-media[data-multi] { cursor: pointer; }
+        .product-old-price { margin-left: 4px; font-size: 9px; font-weight: 500; color: #9ca3af; text-decoration: line-through; }
+        .filter-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            border-radius: 9999px;
+            background: #1b1b1b;
+            color: #e5e7eb;
+            border: 1px solid #383838;
+        }
+        .filter-btn.active { background: #D4AF37; color: #111; font-weight: 700; border-color: #D4AF37; }
+        .no-products { grid-column: 1 / -1; padding: 24px 0; text-align: center; font-size: 12px; color: #a3a3a3; }
+        .product-title {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #f5f5f5;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            min-height: 2.6em;
+        }
+        .product-price { margin-top: 2px; font-size: 12px; font-weight: 800; color: #D4AF37; }
+        .product-btn {
+            margin-top: 8px;
+            width: 100%;
+            padding: 6px 4px;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 8px;
+            background: #D4AF37;
+            color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .product-btn:hover { background: #B8860B; }
+        .modal-backdrop { background: rgba(17,17,17,.68); animation: fadeIn .2s ease both; }
+        .modal-panel { animation: modalZoom .25s ease both; }
+        .location-video { aspect-ratio: 9 / 16; max-height: 65vh; object-fit: cover; background: #111; transition: opacity .25s ease; }
+        .video-tab.active { background: #D4AF37; color: #111; border-color: #D4AF37; }
+        .search-input { width: 0; opacity: 0; transition: width .25s ease, opacity .25s ease; }
+        .search-wrap:focus-within .search-input { width: 150px; opacity: 1; }
+        .cart-drawer { transition: transform .3s ease; }
+        .cart-drawer.hidden { transform: translateX(100%); }
+        .cart-backdrop { background: rgba(0,0,0,.72); }
+        .dark-surface { background: #151515; border-color: #303030; color: #f5f5f5; }
+        .dark-surface .border-gray-100 { border-color: #303030; }
+        .dark-surface .text-gray-500 { color: #a3a3a3; }
+        .dark-control { background: #202020; border-color: #3a3a3a; color: #f5f5f5; }
+        .payment-step { border: 1px solid #303030; border-radius: 12px; background: #191919; }
+        .payment-step.active { border-color: #D4AF37; box-shadow: 0 0 0 1px rgba(212,175,55,.2); }
+        .payment-step-number { background: #303030; color: #bdbdbd; }
+        .payment-step.active .payment-step-number { background: #D4AF37; color: #111; }
+        .dark-section .text-gray-500, .dark-section .text-gray-400 { color: #a3a3a3; }
+        .dark-section .bg-gray-50 { background: #1b1b1b; border-color: #303030; }
+        .faq-item { border: 1px solid #2c2c2c; border-radius: 14px; background: #171717; }
+        .surface-modal { background: #151515; border: 1px solid #343434; color: #f5f5f5; }
+        .surface-modal .text-dark { color: #f5f5f5 !important; }
+        .surface-modal .text-gray-600, .surface-modal .text-gray-500 { color: #a3a3a3 !important; }
+        .surface-modal .bg-gray-50, .surface-modal .bg-gray-100 { background: #202020 !important; }
+        .surface-modal .border-gray-100, .surface-modal .border-gray-200 { border-color: #343434 !important; }
+        .surface-modal input, .surface-modal select { background: #202020; border-color: #3a3a3a; color: #f5f5f5; }
+        .surface-modal input::placeholder { color: #888; }
+        .video-tab { background: #1b1b1b; border-color: #383838 !important; color: #e5e5e5; transition: background .2s ease, color .2s ease, transform .2s ease; }
+        .video-tab:hover { transform: translateY(-2px); }
+        .faq-item summary { cursor: pointer; list-style: none; }
+        .faq-item summary::-webkit-details-marker { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalZoom { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+
+        /* Tablette : 3 colonnes */
+        @media (min-width: 768px) {
+            .product-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        }
+        /* Bureau : 4 colonnes */
+        @media (min-width: 1024px) {
+            .product-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; }
+            .product-title { font-size: 13px; }
+            .product-price { font-size: 14px; }
+            .product-btn { font-size: 11px; padding: 8px 6px; }
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <!-- NAVBAR HEADER -->
+    <header class="site-header sticky top-0 z-50 border-b shadow-sm px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <img src="../static/images/logo.jpg" alt="Bk Collection Mali" class="brand-logo">
+            <div>
+                <h1 class="font-extrabold text-sm text-white leading-none">BK COLLECTION</h1>
+                <span class="text-[10px] text-gold font-bold tracking-wider uppercase">Mali</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <label class="search-wrap flex h-9 items-center rounded-full bg-gray-100 px-3 text-gray-600" aria-label="Rechercher un produit">
+                <i class="fas fa-search text-sm"></i>
+                <input id="product-search" class="search-input ml-2 border-0 bg-transparent text-xs outline-none" type="search" placeholder="Rechercher...">
+            </label>
+            <button onclick="toggleCart()" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-700 relative">
+                <i class="fas fa-shopping-bag text-sm"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-gold text-dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            </button>
+            <button onclick="toggleMenu()" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center text-gray-700">
+                <i class="fas fa-bars text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MENU DEROULANT MOBILE -->
+    <div id="mobile-menu" class="mobile-menu hidden border-b px-4 py-4 space-y-2 shadow-md">
+        <a href="#catalogue" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-th-large mr-2 text-gold"></i> Catalogue</a>
+        <a href="#vente" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-map-marker-alt mr-2 text-gold"></i> Lieux de vente</a>
+        <a href="#commander" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-sparkles mr-2 text-gold"></i> Commander</a>
+        <a href="#faq" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-question-circle mr-2 text-gold"></i> FAQ / Questions</a>
+    </div>
+
+    <!-- BANNIERE D'ACCUEIL (HERO SECTION) -->
+    <section id="hero" class="relative bg-dark text-white p-6 mx-3 my-3 rounded-2xl overflow-hidden shadow-lg border border-gold/30">
+        <div class="relative z-10 flex flex-col items-center text-center space-y-3">
+            <img src="../static/images/logo.jpg" alt="Logo Bk Collection Mali" class="h-28 w-28 rounded-full border-2 border-gold object-cover shadow-[0_0_35px_rgba(212,175,55,.25)]">
+            <span class="bg-gold/20 text-gold text-xs px-3 py-1 rounded-full font-semibold inline-block border border-gold/40">
+                Le confort à vos pieds
+            </span>
+            <h2 class="text-3xl font-black uppercase tracking-tight text-white sm:text-5xl">BK Collection Mali</h2>
+            <p class="text-sm font-semibold uppercase tracking-[.25em] text-gold">Style. Confort. Livraison.</p>
+            <p class="text-xs text-gray-300">Choisissez votre modèle et commandez simplement sur Snapchat.</p>
+            <p class="text-xs text-gray-300">Livraison rapide partout à Bamako. Payez à la livraison ou par Mobile Money.</p>
+            <div class="pt-2">
+                <a href="#catalogue" class="inline-block bg-gold hover:bg-gold-hover text-dark font-bold px-6 py-2.5 rounded-xl shadow-md text-sm">
+                    <i class="fas fa-shopping-cart mr-2"></i> VOIR LE CATALOGUE
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATALOGUE SECTION -->
+    <section id="catalogue" class="dark-section px-3 py-4 space-y-4">
+        <div class="text-center space-y-1">
+            <h3 class="text-lg font-bold text-white">Notre catalogue</h3>
+            <div class="w-12 h-1 bg-gold mx-auto rounded-full"></div>
+            <p class="text-xs text-gray-500">Crocs, Claquettes, Jibbitz & Chaussettes disponibles</p>
+        </div>
+
+        <!-- FILTRES DE CATEGORIES -->
+        <div id="category-filters" class="flex space-x-2 overflow-x-auto pb-2 scrollbar-none">
+            <button data-filter="all" class="filter-btn active">Tout</button>
+            <button data-filter="crocs" class="filter-btn">Crocs</button>
+            <button data-filter="claquettes" class="filter-btn">Claquettes</button>
+            <button data-filter="jibbitz" class="filter-btn">Jibbitz</button>
+            <button data-filter="chaussettes" class="filter-btn">Chaussettes</button>
+        </div>
+
+        <!-- GRILLE PRODUITS (2 col. mobile, 3 tablette, 4 bureau) - rendue depuis le tableau PRODUCTS -->
+        <div id="product-grid" class="product-grid"></div>
+    </section>
+
+    <!-- SECTION LOCALISATION -->
+    <section id="location" class="dark-section px-3 py-4 my-4 border-y">
+        <div class="space-y-3">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gold/20 text-gold rounded-full flex items-center justify-center">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm text-white">Localisation & Boutique</h3>
+                    <p class="text-xs text-gray-500">Bamako, Mali</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-3 rounded-xl space-y-2 border border-gray-200/60 text-xs">
+                <p><i class="fas fa-store text-gold mr-2"></i> <strong>Point de vente :</strong> MOOD COFFOE, ENER ACI, UIE BADALABOUGOU </p>
+                <p><i class="fab fa-snapchat text-gold mr-2"></i> <strong>Snapchat :</strong> BK Collection Mali</p>
+                <p><i class="fas fa-truck text-gold mr-2"></i> <strong>Livraison :</strong> Rapide à domicile ou retrait</p>
+            </div>
+
+            <a href="https://snapchat.com/t/tqxObnlA"
+               target="_blank"
+               class="w-full bg-dark text-gold font-bold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 border border-gold/40">
+                <i class="fab fa-snapchat text-yellow-300 text-sm"></i>
+                <span>NOUS CONTACTER SUR SNAPCHAT</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- LIEUX DE VENTE -->
+    <section id="vente" class="dark-section px-3 py-6 border-y">
+        <div class="text-center space-y-1 mb-4">
+            <h3 class="text-lg font-bold text-white">Nos Lieux de Vente à Bamako</h3>
+            <div class="w-12 h-1 bg-gold mx-auto rounded-full"></div>
+            <p class="text-xs text-gray-400">Découvrez nos points de vente en vidéo</p>
+        </div>
+        <div id="video-tabs" class="flex gap-2 overflow-x-auto pb-2 justify-center">
+            <button class="video-tab active border rounded-full px-3 py-2 text-xs font-bold whitespace-nowrap" data-video="0">MOOD COFFEE</button>
+            <button class="video-tab border rounded-full px-3 py-2 text-xs font-bold whitespace-nowrap" data-video="1">ENER ACI</button>
+            <button class="video-tab border rounded-full px-3 py-2 text-xs font-bold whitespace-nowrap" data-video="2">UIE</button>
+        </div>
+        <div class="mt-3 flex justify-center">
+            <video id="location-video" class="location-video w-full max-w-xs rounded-2xl shadow-md" controls playsinline preload="metadata"></video>
+        </div>
+    </section>
+
+    <!-- MODALE D'ACHAT -->
+    <div id="product-modal" class="modal-backdrop hidden fixed inset-0 z-[60] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-product-name">
+        <div class="surface-modal modal-panel relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-2xl p-5 shadow-2xl">
+            <button id="modal-close" class="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700" aria-label="Fermer"><i class="fas fa-times"></i></button>
+            <img id="modal-product-image" class="h-56 w-full rounded-xl bg-gray-50 object-cover" alt="">
+            <div class="mt-4">
+                <h3 id="modal-product-name" class="text-lg font-extrabold text-dark"></h3>
+                <p id="modal-product-price" class="mt-1 text-base font-extrabold text-dark"></p>
+                <div class="mt-4">
+                    <label for="modal-size" class="mb-1 block text-xs font-bold text-gray-600">Pointure</label>
+                    <select id="modal-size" class="dark-control w-full rounded-lg border px-3 py-2 text-sm">
+                        <option value="">Choisir une pointure</option>
+                    </select>
+                </div>
+                <div class="mt-3">
+                    <label for="modal-quantity" class="mb-1 block text-xs font-bold text-gray-600">Quantité</label>
+                    <input id="modal-quantity" type="number" min="1" value="1" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm">
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-2">
+                    <button id="add-to-cart" class="rounded-xl bg-gold px-3 py-3 text-xs font-extrabold text-dark"><i class="fas fa-cart-plus mr-1"></i> Ajouter au panier</button>
+                    <button id="order-snapchat" class="rounded-xl bg-dark px-3 py-3 text-xs font-extrabold text-white"><i class="fab fa-snapchat mr-1 text-yellow-300"></i> Commander sur Snapchat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TUNNEL DE PAIEMENT -->
+    <div id="payment-modal" class="modal-backdrop hidden fixed inset-0 z-[80] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="payment-title">
+        <div class="surface-modal modal-panel relative w-full max-w-lg max-h-[94vh] overflow-y-auto rounded-2xl p-5 shadow-2xl">
+            <button id="payment-close" class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700" aria-label="Fermer le paiement"><i class="fas fa-times"></i></button>
+            <div class="pr-10">
+                <p class="text-[10px] font-bold uppercase tracking-[.2em] text-gold">Commande sécurisée</p>
+                <h3 id="payment-title" class="mt-1 text-xl font-black text-white">Finaliser votre commande</h3>
+                <p id="payment-total" class="mt-1 text-sm font-bold text-gold"></p>
+            </div>
+            <div class="mt-5 grid grid-cols-3 gap-2">
+                <div class="payment-step active p-2 text-center" data-step-label="1"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">1</span><p class="mt-1 text-[10px] font-bold">Payer</p></div>
+                <div class="payment-step p-2 text-center" data-step-label="2"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">2</span><p class="mt-1 text-[10px] font-bold">Transférer</p></div>
+                <div class="payment-step p-2 text-center" data-step-label="3"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">3</span><p class="mt-1 text-[10px] font-bold">Valider</p></div>
+            </div>
+            <div id="payment-step-1" class="payment-content mt-5">
+                <p class="mb-3 text-xs text-gray-400">Choisissez votre moyen de paiement.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="Orange Money" class="mr-2 accent-yellow-500"> Orange Money</label>
+                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="mr-2 accent-yellow-500"> Wave</label>
+                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="mr-2 accent-yellow-500"> MyNita</label>
+                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="CinetPay" class="mr-2 accent-yellow-500"> CinetPay</label>
+                </div>
+                <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Continuer</button>
+            </div>
+            <div id="payment-step-2" class="payment-content hidden mt-5">
+                <div class="rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm">
+                    <p class="text-xs text-gray-400">Opérateur sélectionné</p><p id="payment-method-label" class="font-black text-gold"></p>
+                    <p class="mt-3 text-xs text-gray-400">Numéro marchand</p><p class="font-bold text-white">À confirmer directement sur Snapchat</p>
+                    <p class="mt-3 text-xs text-gray-400">Montant exact</p><p id="payment-amount" class="font-black text-white"></p>
+                    <p class="mt-3 text-xs text-gray-400">Motif à copier</p>
+                    <div class="flex items-center gap-2"><p id="payment-reference" class="min-w-0 flex-1 break-all rounded-lg bg-black/30 p-2 font-mono text-xs text-gold"></p><button id="copy-reference" class="rounded-lg border border-gold/40 px-2 py-2 text-xs text-gold" type="button" aria-label="Copier le motif"><i class="fas fa-copy"></i></button></div>
+                </div>
+                <button id="payment-next-2" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">C'est fait, j'ai payé</button>
+            </div>
+            <div id="payment-step-3" class="payment-content hidden mt-5">
+                <label class="mb-1 block text-xs font-bold text-gray-400" for="payment-proof">Capture d'écran du paiement</label>
+                <input id="payment-proof" type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2 text-xs">
+                <label class="mb-1 mt-3 block text-xs font-bold text-gray-400" for="payment-contact">Téléphone ou lien Snapchat</label>
+                <input id="payment-contact" type="text" placeholder="+223 ... ou votre lien Snapchat" class="w-full rounded-lg border px-3 py-2 text-sm">
+                <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> Envoyer pour validation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COMMANDER -->
+    <section id="commander" class="dark-section mx-3 my-5 rounded-2xl border p-6 text-center shadow-lg">
+        <span class="text-xs font-bold uppercase tracking-[.2em] text-gold">Commande rapide</span>
+        <h3 class="mt-2 text-xl font-extrabold text-white">Comment commander</h3>
+        <p class="mx-auto mt-2 max-w-md text-sm text-gray-400">Un parcours simple, clair et sécurisé en trois étapes.</p>
+        <div class="mx-auto mt-5 grid max-w-4xl gap-3 text-left md:grid-cols-3">
+            <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-black text-dark">1</span>
+                <h4 class="mt-3 font-bold text-white">Choisis</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-400">Sélectionne ton modèle, ta pointure et tes articles.</p>
+            </article>
+            <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-black text-dark">2</span>
+                <h4 class="mt-3 font-bold text-white">Paye</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-400">Choisis Orange Money, Wave, MyNita ou CinetPay.</p>
+            </article>
+            <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold text-sm font-black text-dark">3</span>
+                <h4 class="mt-3 font-bold text-white">Livraison</h4>
+                <p class="mt-1 text-xs leading-5 text-gray-400">Livraison à domicile ou retrait à MOOD COFFEE, ENER ACI ou UIE.</p>
+            </article>
+        </div>
+        <p class="mx-auto mt-5 max-w-md text-sm text-gray-400">Une question sur un modèle ? Écrivez-nous sur Snapchat pour confirmer votre taille, la disponibilité et la livraison.</p>
+        <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-extrabold text-dark transition hover:bg-gold-hover">
+            <i class="fab fa-snapchat"></i> Commander sur Snapchat
+        </a>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="dark-section px-3 py-6 border-y">
+        <div class="mx-auto max-w-3xl space-y-3">
+            <div class="mb-4 text-center">
+                <h3 class="text-lg font-bold text-white">FAQ / Questions</h3>
+                <div class="mx-auto mt-2 h-1 w-12 rounded-full bg-gold"></div>
+            </div>
+            <details class="faq-item p-4">
+                <summary class="flex items-center justify-between text-sm font-bold text-white">Quelles tailles sont disponibles ? <i class="fas fa-plus text-gold"></i></summary>
+                <p class="mt-3 text-xs leading-5 text-gray-400">Les pointures proposées vont de 36 à 45 selon le modèle et le stock disponible.</p>
+            </details>
+            <details class="faq-item p-4">
+                <summary class="flex items-center justify-between text-sm font-bold text-white">Livrez-vous à Bamako ? <i class="fas fa-plus text-gold"></i></summary>
+                <p class="mt-3 text-xs leading-5 text-gray-400">Oui, nous livrons rapidement à Bamako. Contactez-nous sur Snapchat pour confirmer votre zone.</p>
+            </details>
+            <details class="faq-item p-4">
+                <summary class="flex items-center justify-between text-sm font-bold text-white">Comment commander ? <i class="fas fa-plus text-gold"></i></summary>
+                <p class="mt-3 text-xs leading-5 text-gray-400">Sélectionnez un article, choisissez la taille, ajoutez-le au panier puis cliquez sur « Commander sur Snapchat ».</p>
+            </details>
+        </div>
+    </section>
+
+    <!-- PANIER -->
+    <div id="cart-backdrop" class="cart-backdrop hidden fixed inset-0 z-[65]" onclick="toggleCart(false)"></div>
+    <aside id="cart-drawer" class="cart-drawer dark-surface hidden fixed right-0 top-0 z-[70] flex h-full w-full max-w-sm flex-col shadow-2xl" aria-label="Panier">
+        <div class="flex items-center justify-between border-b border-gray-100 p-4">
+            <h3 class="font-extrabold text-white">Votre panier</h3>
+            <button onclick="toggleCart(false)" class="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100" aria-label="Fermer le panier"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="cart-items" class="flex-1 space-y-3 overflow-y-auto p-4"></div>
+        <div class="border-t border-gray-100 p-4">
+            <div class="mb-3 flex justify-between text-sm font-extrabold"><span>Total</span><span id="cart-total">0 FCFA</span></div>
+            <button id="checkout-button" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gold py-3 text-xs font-extrabold text-dark"><i class="fas fa-lock"></i> Passer au paiement</button>
+        </div>
+    </aside>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white px-4 py-6 text-center space-y-3 mt-6">
+        <img src="../static/images/logo.jpg" alt="Bk Collection Mali" class="brand-logo mx-auto">
+        <h4 class="font-bold text-sm text-gold">Bk Collection Mali</h4>
+        <p class="text-xs text-gray-400">Vente de Crocs, Claquettes et Accessoires de qualité.</p>
+        <p class="text-[10px] text-gray-500 pt-2 border-t border-gray-800">© 2026 Bk Collection Mali. Tous droits réservés.</p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        const IMG_DIR = '../static/images/';
+        const VIDEO_FILES = ['lieu1.mp4', 'lieu2.mp4', 'lieu3.mp4'];
+        const PRODUCTS = [
+            { id: 'spiderman-rouge', name: 'Crocs Spider-Man Rouge', category: 'crocs', price: 18000, images: ['crocs-spiderman-rouge-1.jpg.jpg', 'crocs-spiderman-rouge-2.jpg.jpg'], badge: { text: 'Nouveau' } },
+            { id: 'spiderman-noir', name: 'Crocs Spider-Man Noir', category: 'crocs', price: 18000, images: ['crocs-spiderman-noir-1.jpg.jpg', 'crocs-spiderman-noir-2.jpg.jpg'], badge: { text: 'Tendance', style: 'dark' } },
+            { id: 'batman', name: 'Crocs Batman', category: 'crocs', price: 18000, images: ['crocs-batman-1.jpg.jpg', 'crocs-batman-2.jpg.jpg'] },
+            { id: 'minecraft', name: 'Crocs Minecraft', category: 'crocs', price: 18000, images: ['crocs-minecraft.jpg.jpg', 'crocs-minecraft-1.jpg.jpg'] },
+            { id: 'simpsons', name: 'Crocs Simpsons', category: 'crocs', price: 18000, images: ['crocs-simpsons-1.jpg.jpg', 'crocs-simpsons-2.jpg.jpg'] },
+            { id: 'cars-mcqueen', name: 'Crocs Lightning McQueen', category: 'crocs', price: 20000, images: ['crocs-classic-1.jpg.jpg', 'crocs-classic-2.jpg.jpg'], badge: { text: 'Limited stock', style: 'promo' } },
+            { id: 'classic-noir', name: 'Crocs Classic Noir', category: 'crocs', price: 15000, images: ['crocs-classic-black.jpg.jpg', 'crocs-classic-black-1.jpg.jpg'] },
+            { id: 'classic-blanc', name: 'Crocs Classic Blanc', category: 'crocs', price: 15000, images: ['crocs-classic-white.jpg.jpg', 'crocs-classic-white-1.jpg.jpg'] },
+            { id: 'classic-rose', name: 'Crocs Classic Rose', category: 'crocs', price: 15000, images: ['crocs-classic-pink.jpg.jpg', 'crocs-classic-pink-1.jpg.jpg'] },
+            { id: 'classic-rouge', name: 'Crocs Classic Rouge', category: 'crocs', price: 15000, images: ['crocs-classic-red.jpg.jpg', 'crocs-classic-red-1.jpg.jpg'] },
+            { id: 'classic-calcite', name: 'Crocs Classic Bleu Calcite', category: 'crocs', price: 15000, images: ['crocs-classic-blue-calcite.jpg.jpg'] },
+            { id: 'classic-bleu', name: 'Crocs Classic Bleu', category: 'crocs', price: 15000, images: ['crcos-classic-blue.jpg.jpg', 'crcos-classic-blue-1.jpg.jpg'] },
+            { id: 'echo-noir', name: 'Crocs Echo Noir', category: 'crocs', price: 17000, images: ['crocs-echo-black.jpg.jpg', 'crocs-echo-black-1.jpg.jpg'] },
+            { id: 'yukon-noir', name: 'Crocs Yukon Noir', category: 'crocs', price: 20000, images: ['télécharger (16).jpg'], badge: { text: 'Nouveau' } },
+            { id: 'birkenstock-boston', name: 'Birkenstock Boston Noir', category: 'claquettes', price: 20000, images: ['birken-noir-1.jpg.jpg'] },
+            { id: 'slide-noire', name: 'Slide noire', category: 'claquettes', price: 8000, images: ['slide-black.jpg.jpg', 'slide-black-1.jpg.jpg'], badge: { text: 'Tendance' } },
+            { id: 'nike-calm-slide', name: 'Claquette Nike Calm noire', category: 'claquettes', price: 10000, images: ['sandal-nike-1.jpg.jpg'], badge: { text: 'Nouveau', style: 'dark' } },
+            { id: 'nike-calm-mule', name: 'Mule Nike Calm noire', category: 'claquettes', price: 12000, images: ['sandal-nike-2.jpg.jpg'] },
+            { id: 'nike-victori', name: 'Claquette Nike Victori', category: 'claquettes', price: 10000, images: ['télécharger (17).jpg'], badge: { text: 'Populaire' } },
+            { id: 'jibbitz-rose', name: 'Pack Jibbitz rose', category: 'jibbitz', price: 2000, images: ['autocolant-1.jpg.jpg'] },
+            { id: 'jibbitz-halloween', name: 'Pack Jibbitz Halloween', category: 'jibbitz', price: 2000, images: ['autocolant-2.jpg.jpg'] },
+            { id: 'jibbitz-lettres', name: 'Pack Jibbitz lettres', category: 'jibbitz', price: 2000, images: ['autocolan-3.jpg.jpg'] },
+            { id: 'jibbitz-classic', name: 'Jibbitz classique', category: 'jibbitz', price: 2000, images: ['jibbitz.png.jpg'] },
+            { id: 'chaussettes-nike-blanches', name: 'Chaussettes Nike blanches', category: 'chaussettes', price: 3000, images: ['chaussettes-blanches-nike.jpg.jpg'] },
+            { id: 'chaussettes-nike-noires', name: 'Chaussettes Nike noires', category: 'chaussettes', price: 3000, images: ['chaussettes-noirs-nike.jpg.jpg'] },
+            { id: 'chaussettes-blanches', name: 'Chaussettes blanches', category: 'chaussettes', price: 1500, images: ['chaussettes-blanches.jpg.jpg'] },
+            { id: 'chaussettes-noires', name: 'Chaussettes noires', category: 'chaussettes', price: 1500, images: ['chaussettes-noires.jpg.jpg'] }
+        ];
+
+        const formatPrice = n => n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ') + ' FCFA';
+
+        function createCard(p) {
+            const card = document.createElement('article');
+            card.className = 'product-card';
+            card.dataset.category = p.category;
+
+            const media = document.createElement('button');
+            media.className = 'product-media';
+            media.type = 'button';
+            media.setAttribute('aria-label', `Voir ${p.name}`);
+
+            if (p.badge) {
+                const badge = document.createElement('span');
+                badge.className = 'product-badge' + (p.badge.style ? ' ' + p.badge.style : '');
+                badge.textContent = p.badge.text;
+                media.appendChild(badge);
+            }
+
+            const img = document.createElement('img');
+            img.src = IMG_DIR + p.images[0];
+            img.alt = p.name;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            media.appendChild(img);
+
+            if (p.images.length > 1) {
+                const count = document.createElement('span');
+                count.className = 'product-count';
+                count.textContent = `1/${p.images.length}`;
+                media.appendChild(count);
+                media.dataset.multi = '';
+            }
+
+            const title = document.createElement('h4');
+            title.className = 'product-title';
+            title.textContent = p.name;
+
+            const price = document.createElement('p');
+            price.className = 'product-price';
+            price.textContent = formatPrice(p.price);
+            if (p.oldPrice) {
+                const old = document.createElement('span');
+                old.className = 'product-old-price';
+                old.textContent = formatPrice(p.oldPrice);
+                price.appendChild(old);
+            }
+
+            const info = document.createElement('div');
+            info.append(media, title, price);
+
+            const btn = document.createElement('button');
+            btn.className = 'product-btn';
+            btn.innerHTML = '<i class="fas fa-cart-plus"></i><span></span>';
+            btn.lastChild.textContent = p.category === 'crocs' || p.category === 'claquettes' ? 'CHOISIR TAILLE' : 'AJOUTER';
+            media.addEventListener('click', () => openProductModal(p));
+            btn.addEventListener('click', () => openProductModal(p));
+
+            card.append(info, btn);
+            return card;
+        }
+
+        let activeFilter = 'all';
+        let searchQuery = '';
+        function renderProducts(filter = activeFilter) {
+            activeFilter = filter;
+            const grid = document.getElementById('product-grid');
+            const list = PRODUCTS.filter(p => (filter === 'all' || p.category === filter) && p.name.toLowerCase().includes(searchQuery));
+            grid.replaceChildren(...list.map(createCard));
+            if (!list.length) {
+                const empty = document.createElement('p');
+                empty.className = 'no-products';
+                empty.textContent = 'Aucun produit dans cette catégorie pour le moment.';
+                grid.appendChild(empty);
+            }
+        }
+
+        document.getElementById('category-filters').addEventListener('click', e => {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+            renderProducts(btn.dataset.filter);
+        });
+        document.getElementById('product-search').addEventListener('input', e => {
+            searchQuery = e.target.value.trim().toLowerCase();
+            renderProducts();
+        });
+        renderProducts('all');
+
+        let cartCount = 0;
+        let cartItems = [];
+        let selectedProduct = null;
+        let selectedImage = 0;
+        const modal = document.getElementById('product-modal');
+        const modalImage = document.getElementById('modal-product-image');
+        const modalSize = document.getElementById('modal-size');
+        for (let size = 36; size <= 45; size++) modalSize.insertAdjacentHTML('beforeend', `<option value="${size}">${size}</option>`);
+
+        function openProductModal(product) {
+            selectedProduct = product;
+            selectedImage = 0;
+            modalImage.src = IMG_DIR + product.images[selectedImage];
+            modalImage.alt = product.name;
+            document.getElementById('modal-product-name').textContent = product.name;
+            document.getElementById('modal-product-price').textContent = formatPrice(product.price);
+            modalSize.value = '';
+            document.getElementById('modal-quantity').value = 1;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        }
+        function closeProductModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        }
+        function getOrderDetails() {
+            const size = modalSize.value;
+            if (!size) { modalSize.focus(); return null; }
+            const quantity = Math.max(1, Number(document.getElementById('modal-quantity').value) || 1);
+            return { size, quantity, total: selectedProduct.price * quantity };
+        }
+        document.getElementById('modal-close').addEventListener('click', closeProductModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeProductModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeProductModal(); });
+        modalImage.addEventListener('click', () => {
+            if (!selectedProduct || selectedProduct.images.length < 2) return;
+            selectedImage = (selectedImage + 1) % selectedProduct.images.length;
+            modalImage.src = IMG_DIR + selectedProduct.images[selectedImage];
+        });
+        document.getElementById('add-to-cart').addEventListener('click', () => {
+            const details = getOrderDetails();
+            if (!details) return;
+            cartItems.push({ product: selectedProduct, ...details });
+            cartCount += details.quantity;
+            document.getElementById('cart-count').textContent = cartCount;
+            closeProductModal();
+        });
+        document.getElementById('order-snapchat').addEventListener('click', () => {
+            const details = getOrderDetails();
+            if (!details) return;
+            openPaymentTunnel([{ product: selectedProduct, ...details }]);
+            closeProductModal();
+        });
+        document.getElementById('video-tabs').addEventListener('click', e => {
+            const tab = e.target.closest('.video-tab');
+            if (!tab) return;
+            const video = document.getElementById('location-video');
+            video.pause();
+            video.style.opacity = '0';
+            video.src = IMG_DIR + VIDEO_FILES[Number(tab.dataset.video)];
+            video.load();
+            video.addEventListener('loadeddata', () => { video.style.opacity = '1'; }, { once: true });
+            document.querySelectorAll('.video-tab').forEach(button => button.classList.toggle('active', button === tab));
+        });
+        document.getElementById('location-video').src = IMG_DIR + VIDEO_FILES[0];
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+        function toggleCart() {
+            const open = arguments.length === 0 ? true : arguments[0];
+            const drawer = document.getElementById('cart-drawer');
+            const backdrop = document.getElementById('cart-backdrop');
+            drawer.classList.toggle('hidden', !open);
+            backdrop.classList.toggle('hidden', !open);
+            if (open) renderCart();
+        }
+        let paymentItems = [];
+        let paymentStep = 1;
+        const paymentModal = document.getElementById('payment-modal');
+        function openPaymentTunnel(items) {
+            if (!items.length) {
+                toggleCart(false);
+                return;
+            }
+            paymentItems = items;
+            paymentStep = 1;
+            paymentModal.classList.remove('hidden');
+            paymentModal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+            updatePaymentStep();
+        }
+        function closePaymentTunnel() {
+            paymentModal.classList.add('hidden');
+            paymentModal.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+        }
+        function paymentTotal() {
+            return paymentItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+        }
+        function updatePaymentStep() {
+            const total = paymentTotal();
+            document.getElementById('payment-total').textContent = `Total à régler : ${formatPrice(total)}`;
+            document.querySelectorAll('.payment-content').forEach((content, index) => content.classList.toggle('hidden', index + 1 !== paymentStep));
+            document.querySelectorAll('[data-step-label]').forEach((step, index) => step.classList.toggle('active', index + 1 === paymentStep));
+            if (paymentStep === 2) {
+                const method = document.querySelector('input[name="payment-method"]:checked').value;
+                document.getElementById('payment-method-label').textContent = method;
+                document.getElementById('payment-amount').textContent = formatPrice(total);
+                document.getElementById('payment-reference').textContent = `BK-MALI-${Date.now().toString().slice(-6)}`;
+            }
+        }
+        document.getElementById('payment-close').addEventListener('click', closePaymentTunnel);
+        paymentModal.addEventListener('click', e => { if (e.target === paymentModal) closePaymentTunnel(); });
+        document.getElementById('payment-next-1').addEventListener('click', () => {
+            if (!document.querySelector('input[name="payment-method"]:checked')) return;
+            paymentStep = 2;
+            updatePaymentStep();
+        });
+        document.getElementById('payment-next-2').addEventListener('click', () => {
+            paymentStep = 3;
+            updatePaymentStep();
+        });
+        document.getElementById('copy-reference').addEventListener('click', async () => {
+            await navigator.clipboard.writeText(document.getElementById('payment-reference').textContent);
+        });
+        document.getElementById('payment-submit').addEventListener('click', () => {
+            const contact = document.getElementById('payment-contact').value.trim();
+            if (!contact) {
+                document.getElementById('payment-contact').focus();
+                return;
+            }
+            const summary = paymentItems.map(item => `${item.product.name} x${item.quantity}`).join(', ');
+            const message = `Bonjour Bk Collection Mali. Commande à valider : ${summary}. Total : ${formatPrice(paymentTotal())}. Contact : ${contact}. Capture de paiement jointe lors du contact.`;
+            window.open(`https://snapchat.com/t/tqxObnlA?text=${encodeURIComponent(message)}`, '_blank');
+            closePaymentTunnel();
+        });
+        document.getElementById('checkout-button').addEventListener('click', () => openPaymentTunnel(cartItems));
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+            document.getElementById('cart-total').textContent = formatPrice(total);
+            if (!cartItems.length) {
+                container.innerHTML = '<p class="py-8 text-center text-sm text-gray-500">Votre panier est vide.</p>';
+                return;
+            }
+            container.innerHTML = cartItems.map((item, index) => `
+                <div class="flex gap-3 rounded-xl border border-gray-100 p-2">
+                    <img src="${IMG_DIR + item.product.images[0]}" alt="${item.product.name}" class="h-16 w-16 rounded-lg object-cover">
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-xs font-bold">${item.product.name}</p>
+                        <p class="text-[11px] text-gray-500">Pointure ${item.size} · ${formatPrice(item.product.price)}</p>
+                        <div class="mt-1 flex items-center gap-2">
+                            <button class="cart-qty rounded bg-gray-100 px-2 py-1 text-xs" data-index="${index}" data-change="-1">−</button>
+                            <span class="text-xs font-bold">${item.quantity}</span>
+                            <button class="cart-qty rounded bg-gray-100 px-2 py-1 text-xs" data-index="${index}" data-change="1">+</button>
+                            <button class="cart-remove ml-auto text-xs text-red-500" data-index="${index}">Supprimer</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+        document.getElementById('cart-items').addEventListener('click', e => {
+            const index = Number(e.target.dataset.index);
+            if (Number.isNaN(index)) return;
+            if (e.target.classList.contains('cart-remove')) cartItems.splice(index, 1);
+            if (e.target.classList.contains('cart-qty')) {
+                cartItems[index].quantity += Number(e.target.dataset.change);
+                if (cartItems[index].quantity < 1) cartItems.splice(index, 1);
+            }
+            cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+            renderCart();
+        });
+    </script>
+</body>
+</html>
