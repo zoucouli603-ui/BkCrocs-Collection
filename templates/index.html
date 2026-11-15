@@ -270,7 +270,7 @@
             </div>
 
             <div class="bg-gray-50 p-3 rounded-xl space-y-2 border border-gray-200/60 text-xs">
-                <p><i class="fas fa-store text-gold mr-2"></i> <strong>Point de vente :</strong> MOOD COFFOE, ENER ACI, UIE BADALABOUGOU </p>
+                <p><i class="fas fa-store text-gold mr-2"></i> <strong>Point de vente :</strong> MOOD COFFEE, ENER ACI, UIE BADALABOUGOU </p>
                 <p><i class="fab fa-snapchat text-gold mr-2"></i> <strong>Snapchat :</strong> BK Collection Mali</p>
                 <p><i class="fas fa-truck text-gold mr-2"></i> <strong>Livraison :</strong> Rapide à domicile ou retrait</p>
             </div>
@@ -337,37 +337,67 @@
                 <p id="payment-total" class="mt-1 text-sm font-bold text-gold"></p>
             </div>
             <div class="mt-5 grid grid-cols-3 gap-2">
-                <div class="payment-step active p-2 text-center" data-step-label="1"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">1</span><p class="mt-1 text-[10px] font-bold">Payer</p></div>
-                <div class="payment-step p-2 text-center" data-step-label="2"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">2</span><p class="mt-1 text-[10px] font-bold">Transférer</p></div>
-                <div class="payment-step p-2 text-center" data-step-label="3"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">3</span><p class="mt-1 text-[10px] font-bold">Valider</p></div>
+                <div class="payment-step active p-2 text-center" data-step-label="1"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">1</span><p class="mt-1 text-[10px] font-bold">Récapitulatif</p></div>
+                <div class="payment-step p-2 text-center" data-step-label="2"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">2</span><p class="mt-1 text-[10px] font-bold">Paiement</p></div>
+                <div class="payment-step p-2 text-center" data-step-label="3"><span class="payment-step-number mx-auto flex h-7 w-7 items-center justify-center rounded-full text-xs font-black">3</span><p class="mt-1 text-[10px] font-bold">Validation</p></div>
             </div>
             <div id="payment-step-1" class="payment-content mt-5">
-                <p class="mb-3 text-xs text-gray-400">Choisissez votre moyen de paiement.</p>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="Orange Money" class="mr-2 accent-yellow-500"> Orange Money</label>
-                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="mr-2 accent-yellow-500"> Wave</label>
-                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="mr-2 accent-yellow-500"> MyNita</label>
-                    <label class="payment-option cursor-pointer rounded-xl border border-gray-200 p-3 text-sm font-bold"><input type="radio" name="payment-method" value="CinetPay" class="mr-2 accent-yellow-500"> CinetPay</label>
+                <p class="mb-3 text-xs text-gray-400">Vérifiez les articles, pointures et quantités avant de payer.</p>
+                <div id="payment-cart-summary" class="space-y-2"></div>
+                <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                    <input id="payment-customer-name" required type="text" placeholder="Nom complet" class="dark-control rounded-lg border px-3 py-2 text-sm">
+                    <input id="payment-customer-phone" required type="tel" placeholder="Téléphone (+223)" class="dark-control rounded-lg border px-3 py-2 text-sm">
                 </div>
-                <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Continuer</button>
+                <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Choisir le paiement</button>
             </div>
             <div id="payment-step-2" class="payment-content hidden mt-5">
-                <div class="rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm">
-                    <p class="text-xs text-gray-400">Opérateur sélectionné</p><p id="payment-method-label" class="font-black text-gold"></p>
-                    <p class="mt-3 text-xs text-gray-400">Numéro marchand</p><p class="font-bold text-white">À confirmer directement sur Snapchat</p>
-                    <p class="mt-3 text-xs text-gray-400">Montant exact</p><p id="payment-amount" class="font-black text-white"></p>
-                    <p class="mt-3 text-xs text-gray-400">Motif à copier</p>
+                <div class="rounded-xl border border-gold/40 bg-gold/10 p-4">
+                    <p class="text-sm font-black text-white">Payer en ligne avec PayDunya</p>
+                    <p class="mt-1 text-xs text-gray-300">Orange Money, Moov, Wave ou carte bancaire, sur la page officielle PayDunya.</p>
+                    <button id="paydunya-button" type="button" class="mt-3 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Payer maintenant avec PayDunya</button>
+                    <p id="paydunya-status" class="mt-2 hidden text-center text-xs text-gold" role="status"></p>
+                </div>
+                <div class="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest text-gray-500"><span class="h-px flex-1 bg-gray-700"></span>ou paiement direct<span class="h-px flex-1 bg-gray-700"></span></div>
+                <p class="mb-3 text-xs text-gray-400">Sélectionnez l'opérateur utilisé et transférez le montant exact.</p>
+                <div class="space-y-2">
+                    <div class="payment-method-card rounded-xl border border-gray-200 p-3">
+                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Orange Money" class="accent-yellow-500"> Orange Money</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 79 87 66 84" type="button">Copier</button></div>
+                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 79 87 66 84</p>
+                    </div>
+                    <div class="payment-method-card rounded-xl border border-gray-200 p-3">
+                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="accent-yellow-500"> Wave</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 79 87 66 84" type="button">Copier</button></div>
+                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 79 87 66 84</p>
+                    </div>
+                    <div class="payment-method-card rounded-xl border border-gray-200 p-3">
+                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="accent-yellow-500"> MyNita</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 79 87 66 84" type="button">Copier</button></div>
+                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 79 87 66 84</p>
+                    </div>
+                </div>
+                <div class="mt-4 rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm">
+                    <p class="text-xs text-gray-400">Montant exact</p><p id="payment-amount" class="font-black text-white"></p>
+                    <p class="mt-3 text-xs text-gray-400">Motif obligatoire à saisir dans le transfert</p>
                     <div class="flex items-center gap-2"><p id="payment-reference" class="min-w-0 flex-1 break-all rounded-lg bg-black/30 p-2 font-mono text-xs text-gold"></p><button id="copy-reference" class="rounded-lg border border-gold/40 px-2 py-2 text-xs text-gold" type="button" aria-label="Copier le motif"><i class="fas fa-copy"></i></button></div>
                 </div>
-                <button id="payment-next-2" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">C'est fait, j'ai payé</button>
+                <button id="payment-next-2" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">J'ai effectué le transfert</button>
             </div>
             <div id="payment-step-3" class="payment-content hidden mt-5">
                 <label class="mb-1 block text-xs font-bold text-gray-400" for="payment-proof">Capture d'écran du paiement</label>
-                <input id="payment-proof" type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2 text-xs">
-                <label class="mb-1 mt-3 block text-xs font-bold text-gray-400" for="payment-contact">Téléphone ou lien Snapchat</label>
-                <input id="payment-contact" type="text" placeholder="+223 ... ou votre lien Snapchat" class="w-full rounded-lg border px-3 py-2 text-sm">
-                <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> Envoyer pour validation</button>
+                <input id="payment-proof" required type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2 text-xs">
+                <label class="mb-1 mt-3 block text-xs font-bold text-gray-400" for="payment-contact">Numéro de téléphone</label>
+                <input id="payment-contact" required type="tel" placeholder="+223 ..." class="w-full rounded-lg border px-3 py-2 text-sm">
+                <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> J'ai payé, envoyer sur Snapchat</button>
             </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION DU RETOUR PAYDUNYA -->
+    <div id="payment-success" class="modal-backdrop hidden fixed inset-0 z-[90] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="payment-success-title">
+        <div class="surface-modal modal-panel w-full max-w-md rounded-2xl p-6 text-center shadow-2xl">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold text-2xl text-dark"><i class="fas fa-check"></i></div>
+            <h3 id="payment-success-title" class="mt-4 text-2xl font-black text-white">Paiement reçu</h3>
+            <p class="mt-2 text-sm text-gray-300">Merci pour votre commande. Votre paiement PayDunya a été confirmé.</p>
+            <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-black text-dark"><i class="fab fa-snapchat"></i> Partager le reçu sur Snapchat</a>
+            <button id="payment-success-close" type="button" class="mt-3 block w-full py-2 text-xs font-bold text-gray-400">Continuer sur le site</button>
         </div>
     </div>
 
@@ -394,9 +424,9 @@
             </article>
         </div>
         <p class="mx-auto mt-5 max-w-md text-sm text-gray-400">Une question sur un modèle ? Écrivez-nous sur Snapchat pour confirmer votre taille, la disponibilité et la livraison.</p>
-        <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-extrabold text-dark transition hover:bg-gold-hover">
+        <button id="commander-cta" type="button" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-extrabold text-dark transition hover:bg-gold-hover">
             <i class="fab fa-snapchat"></i> Commander sur Snapchat
-        </a>
+        </button>
     </section>
 
     <!-- FAQ -->
@@ -646,6 +676,7 @@
         }
         let paymentItems = [];
         let paymentStep = 1;
+        let paymentReference = '';
         const paymentModal = document.getElementById('payment-modal');
         function openPaymentTunnel(items) {
             if (!items.length) {
@@ -654,6 +685,11 @@
             }
             paymentItems = items;
             paymentStep = 1;
+            paymentReference = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
+            document.getElementById('paydunya-status').classList.add('hidden');
+            document.getElementById('paydunya-button').disabled = false;
+            renderPaymentSummary();
+            toggleCart(false);
             paymentModal.classList.remove('hidden');
             paymentModal.classList.add('flex');
             document.body.classList.add('overflow-hidden');
@@ -667,44 +703,132 @@
         function paymentTotal() {
             return paymentItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
         }
+        function renderPaymentSummary() {
+            const summary = document.getElementById('payment-cart-summary');
+            summary.innerHTML = paymentItems.map(item => `
+                <div class="flex items-center gap-3 rounded-xl border border-gray-200 p-3">
+                    <img src="${IMG_DIR + item.product.images[0]}" alt="${item.product.name}" class="h-14 w-14 rounded-lg object-cover">
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-bold text-white">${item.product.name}</p>
+                        <p class="text-xs text-gray-400">Pointure ${item.size} · Quantité ${item.quantity}</p>
+                    </div>
+                    <p class="text-xs font-black text-gold">${formatPrice(item.product.price * item.quantity)}</p>
+                </div>`).join('');
+        }
         function updatePaymentStep() {
             const total = paymentTotal();
             document.getElementById('payment-total').textContent = `Total à régler : ${formatPrice(total)}`;
             document.querySelectorAll('.payment-content').forEach((content, index) => content.classList.toggle('hidden', index + 1 !== paymentStep));
             document.querySelectorAll('[data-step-label]').forEach((step, index) => step.classList.toggle('active', index + 1 === paymentStep));
             if (paymentStep === 2) {
-                const method = document.querySelector('input[name="payment-method"]:checked').value;
-                document.getElementById('payment-method-label').textContent = method;
                 document.getElementById('payment-amount').textContent = formatPrice(total);
-                document.getElementById('payment-reference').textContent = `BK-MALI-${Date.now().toString().slice(-6)}`;
+                document.getElementById('payment-reference').textContent = paymentReference;
             }
         }
         document.getElementById('payment-close').addEventListener('click', closePaymentTunnel);
         paymentModal.addEventListener('click', e => { if (e.target === paymentModal) closePaymentTunnel(); });
         document.getElementById('payment-next-1').addEventListener('click', () => {
-            if (!document.querySelector('input[name="payment-method"]:checked')) return;
+            const customerName = document.getElementById('payment-customer-name').value.trim();
+            const customerPhone = document.getElementById('payment-customer-phone').value.trim();
+            if (!customerName || !customerPhone) {
+                (customerName ? document.getElementById('payment-customer-phone') : document.getElementById('payment-customer-name')).focus();
+                return;
+            }
             paymentStep = 2;
             updatePaymentStep();
         });
         document.getElementById('payment-next-2').addEventListener('click', () => {
+            if (!document.querySelector('input[name="payment-method"]:checked')) return;
             paymentStep = 3;
             updatePaymentStep();
         });
-        document.getElementById('copy-reference').addEventListener('click', async () => {
-            await navigator.clipboard.writeText(document.getElementById('payment-reference').textContent);
+        async function copyText(value, button) {
+            try {
+                await navigator.clipboard.writeText(value);
+                const original = button.textContent;
+                button.textContent = 'Copié';
+                setTimeout(() => { button.textContent = original; }, 1200);
+            } catch (error) {
+                button.title = 'Copie indisponible : sélectionnez le numéro manuellement.';
+            }
+        }
+        document.querySelectorAll('.copy-merchant').forEach(button => {
+            button.addEventListener('click', () => copyText(button.dataset.number, button));
+        });
+        document.getElementById('copy-reference').addEventListener('click', () => {
+            copyText(document.getElementById('payment-reference').textContent, document.getElementById('copy-reference'));
+        });
+        document.getElementById('paydunya-button').addEventListener('click', async () => {
+            const status = document.getElementById('paydunya-status');
+            const button = document.getElementById('paydunya-button');
+            const customerName = document.getElementById('payment-customer-name').value.trim();
+            const customerPhone = document.getElementById('payment-customer-phone').value.trim();
+            if (!customerName || !customerPhone) {
+                (customerName ? document.getElementById('payment-customer-phone') : document.getElementById('payment-customer-name')).focus();
+                return;
+            }
+            button.disabled = true;
+            button.textContent = 'Connexion sécurisée à PayDunya...';
+            status.textContent = 'Création de votre facture sécurisée...';
+            status.classList.remove('hidden');
+            try {
+                const response = await fetch('/api/paydunya', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        total_amount: paymentTotal(),
+                        customer_name: customerName,
+                        customer_phone: customerPhone,
+                        items: paymentItems.map(item => ({
+                            name: item.product.name,
+                            size: item.size,
+                            quantity: item.quantity,
+                            unit_price: item.product.price
+                        }))
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.payment_url) {
+                    throw new Error(result.error || 'Impossible de créer la facture PayDunya.');
+                }
+                window.location.assign(result.payment_url);
+            } catch (error) {
+                status.textContent = error.message || 'PayDunya est momentanément indisponible.';
+                button.disabled = false;
+                button.textContent = 'Réessayer avec PayDunya';
+            }
         });
         document.getElementById('payment-submit').addEventListener('click', () => {
             const contact = document.getElementById('payment-contact').value.trim();
-            if (!contact) {
-                document.getElementById('payment-contact').focus();
+            const proof = document.getElementById('payment-proof').files[0];
+            if (!contact || !proof) {
+                (contact ? document.getElementById('payment-proof') : document.getElementById('payment-contact')).focus();
                 return;
             }
             const summary = paymentItems.map(item => `${item.product.name} x${item.quantity}`).join(', ');
-            const message = `Bonjour Bk Collection Mali. Commande à valider : ${summary}. Total : ${formatPrice(paymentTotal())}. Contact : ${contact}. Capture de paiement jointe lors du contact.`;
+            const message = `Bonjour Bk Collection Mali. J'ai payé. Référence : ${paymentReference}. Commande : ${summary}. Total : ${formatPrice(paymentTotal())}. Téléphone : ${contact}. Capture : ${proof.name}.`;
+            window.alert(`Merci ! Votre demande de validation ${paymentReference} est prête. Vous allez être redirigé vers Snapchat.`);
             window.open(`https://snapchat.com/t/tqxObnlA?text=${encodeURIComponent(message)}`, '_blank');
             closePaymentTunnel();
         });
         document.getElementById('checkout-button').addEventListener('click', () => openPaymentTunnel(cartItems));
+        document.getElementById('commander-cta').addEventListener('click', () => {
+            if (cartItems.length) {
+                openPaymentTunnel(cartItems);
+                return;
+            }
+            document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
+        });
+        const paymentSuccess = document.getElementById('payment-success');
+        if (new URLSearchParams(window.location.search).get('status') === 'success') {
+            paymentSuccess.classList.remove('hidden');
+            paymentSuccess.classList.add('flex');
+        }
+        document.getElementById('payment-success-close').addEventListener('click', () => {
+            paymentSuccess.classList.add('hidden');
+            paymentSuccess.classList.remove('flex');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        });
         function renderCart() {
             const container = document.getElementById('cart-items');
             const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
