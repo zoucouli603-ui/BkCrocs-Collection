@@ -376,13 +376,6 @@
                 <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Choisir le paiement</button>
             </div>
             <div id="payment-step-2" class="payment-content hidden mt-5">
-                <div class="rounded-xl border border-gold/40 bg-gold/10 p-4">
-                    <p class="text-sm font-black text-white">Payer en ligne avec PayDunya (Orange Money, Moov, Wave, Carte)</p>
-                    <p class="mt-1 text-xs text-gray-300">Paiement sécurisé sur la page officielle PayDunya.</p>
-                    <button id="paydunya-button" type="button" class="mt-3 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark disabled:cursor-wait disabled:opacity-70">Payer maintenant avec PayDunya</button>
-                    <p id="paydunya-status" class="mt-2 hidden text-center text-xs text-gold" role="status"></p>
-                </div>
-                <div class="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest text-gray-500"><span class="h-px flex-1 bg-gray-700"></span>ou paiement direct<span class="h-px flex-1 bg-gray-700"></span></div>
                 <p class="mb-3 text-xs text-gray-400">Sélectionnez l'opérateur utilisé et transférez le montant exact.</p>
                 <div class="space-y-2">
                     <div class="payment-method-card rounded-xl border border-gray-200 p-3">
@@ -391,10 +384,6 @@
                     </div>
                     <div class="payment-method-card rounded-xl border border-gray-200 p-3">
                         <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="accent-yellow-500"> Wave</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
-                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
-                    </div>
-                    <div class="payment-method-card rounded-xl border border-gray-200 p-3">
-                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="accent-yellow-500"> MyNita</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
                         <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
                     </div>
                 </div>
@@ -412,17 +401,6 @@
                 <input id="payment-contact" required type="tel" placeholder="+223 ..." class="w-full rounded-lg border px-3 py-2 text-sm">
                 <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> J'ai payé, copier et ouvrir Snapchat</button>
             </div>
-        </div>
-    </div>
-
-    <!-- CONFIRMATION DU RETOUR PAYDUNYA -->
-    <div id="payment-success" class="modal-backdrop hidden fixed inset-0 z-[90] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="payment-success-title">
-        <div class="surface-modal modal-panel w-full max-w-md rounded-2xl p-6 text-center shadow-2xl">
-            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold text-2xl text-dark"><i class="fas fa-check"></i></div>
-            <h3 id="payment-success-title" class="mt-4 text-2xl font-black text-white">Commande confirmée</h3>
-            <p class="mt-2 text-sm text-gray-300">Merci pour votre commande chez Bk Collection Mali. Votre paiement PayDunya a bien été effectué.</p>
-            <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-black text-dark"><i class="fab fa-snapchat"></i> Partager le reçu sur Snapchat</a>
-            <button id="payment-success-close" type="button" class="mt-3 block w-full py-2 text-xs font-bold text-gray-400">Continuer sur le site</button>
         </div>
     </div>
 
@@ -718,11 +696,6 @@
             paymentItems = items;
             paymentStep = 1;
             paymentReference = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
-            const paydunyaStatus = document.getElementById('paydunya-status');
-            const paydunyaButton = document.getElementById('paydunya-button');
-            paydunyaStatus.classList.add('hidden');
-            paydunyaButton.disabled = false;
-            paydunyaButton.textContent = 'Payer maintenant avec PayDunya';
             renderPaymentSummary();
             toggleCart(false);
             paymentModal.classList.remove('hidden');
@@ -793,47 +766,6 @@
         document.getElementById('copy-reference').addEventListener('click', () => {
             copyText(document.getElementById('payment-reference').textContent, document.getElementById('copy-reference'));
         });
-        document.getElementById('paydunya-button').addEventListener('click', async () => {
-            const status = document.getElementById('paydunya-status');
-            const button = document.getElementById('paydunya-button');
-            const customerName = document.getElementById('payment-customer-name').value.trim();
-            const customerPhone = document.getElementById('payment-customer-phone').value.trim();
-            if (!customerName || !customerPhone) {
-                (customerName ? document.getElementById('payment-customer-phone') : document.getElementById('payment-customer-name')).focus();
-                return;
-            }
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion sécurisée à PayDunya...';
-            status.textContent = 'Création de votre facture sécurisée...';
-            status.classList.remove('hidden');
-            try {
-                const response = await fetch('/api/paydunya', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        total_amount: paymentTotal(),
-                        customer_name: customerName,
-                        customer_phone: customerPhone,
-                        items: paymentItems.map(item => ({
-                            name: item.product.name,
-                            size: String(item.size),
-                            quantity: item.quantity,
-                            unit_price: item.product.price
-                        }))
-                    })
-                });
-                const result = await response.json();
-                if (!response.ok || !result.payment_url) {
-                    throw new Error(result.error || 'Impossible de créer la facture PayDunya.');
-                }
-                status.textContent = 'Redirection vers la page de paiement PayDunya...';
-                window.location.assign(result.payment_url);
-            } catch (error) {
-                status.textContent = error.message || 'PayDunya est momentanément indisponible.';
-                button.disabled = false;
-                button.textContent = 'Réessayer avec PayDunya';
-            }
-        });
         function showToast(text) {
             const toast = document.getElementById('copy-toast');
             toast.textContent = text;
@@ -895,16 +827,6 @@
                 return;
             }
             document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
-        });
-        const paymentSuccess = document.getElementById('payment-success');
-        if (new URLSearchParams(window.location.search).get('status') === 'success') {
-            paymentSuccess.classList.remove('hidden');
-            paymentSuccess.classList.add('flex');
-        }
-        document.getElementById('payment-success-close').addEventListener('click', () => {
-            paymentSuccess.classList.add('hidden');
-            paymentSuccess.classList.remove('flex');
-            window.history.replaceState({}, document.title, window.location.pathname);
         });
         function renderCart() {
             const container = document.getElementById('cart-items');
