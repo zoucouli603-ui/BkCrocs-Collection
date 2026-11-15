@@ -30,6 +30,13 @@
         .site-header { background: rgba(17,17,17,.94); border-color: rgba(212,175,55,.22); backdrop-filter: blur(14px); }
         .brand-logo { height: 42px; width: 42px; object-fit: cover; border: 1px solid #D4AF37; border-radius: 9999px; }
         .mobile-menu { background: #151515; border-color: rgba(212,175,55,.2); }
+        .menu-drawer { transition: transform .3s ease; background: #111; border-right: 1px solid rgba(212,175,55,.25); }
+        .menu-drawer.hidden { transform: translateX(-100%); }
+        .menu-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 14px; color: #f5f5f5; transition: background .2s ease; }
+        .menu-link:hover { background: rgba(212,175,55,.12); }
+        .menu-link i { width: 20px; text-align: center; color: #D4AF37; }
+        .copy-toast { position: fixed; left: 50%; bottom: 24px; z-index: 120; max-width: calc(100% - 32px); transform: translate(-50%, 20px); opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; background: #111; color: #f5f5f5; border: 1px solid #D4AF37; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+        .copy-toast.show { opacity: 1; transform: translate(-50%, 0); }
         .dark-section { background: #111; border-color: rgba(212,175,55,.16); }
 
         /* GRILLE PRODUITS - mobile-first : 2 colonnes, cartes compactes */
@@ -208,13 +215,31 @@
         </div>
     </header>
 
-    <!-- MENU DEROULANT MOBILE -->
-    <div id="mobile-menu" class="mobile-menu hidden border-b px-4 py-4 space-y-2 shadow-md">
-        <a href="#catalogue" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-th-large mr-2 text-gold"></i> Catalogue</a>
-        <a href="#vente" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-map-marker-alt mr-2 text-gold"></i> Lieux de vente</a>
-        <a href="#commander" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-sparkles mr-2 text-gold"></i> Commander</a>
-        <a href="#faq" onclick="toggleMenu()" class="block py-2 px-3 hover:bg-white/10 rounded-lg font-medium"><i class="fas fa-question-circle mr-2 text-gold"></i> FAQ / Questions</a>
-    </div>
+    <!-- MENU LATERAL (DRAWER) -->
+    <div id="menu-backdrop" class="cart-backdrop hidden fixed inset-0 z-[65]" onclick="toggleMenu(false)"></div>
+    <aside id="mobile-menu" class="menu-drawer hidden fixed left-0 top-0 z-[70] flex h-full w-full max-w-xs flex-col shadow-2xl" aria-label="Menu principal">
+        <div class="flex items-center justify-between border-b border-white/10 p-4">
+            <div class="flex items-center gap-2">
+                <img src="../static/images/logo.jpg" alt="" class="brand-logo">
+                <div>
+                    <p class="text-sm font-extrabold leading-none text-white">BK COLLECTION</p>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gold">Mali</span>
+                </div>
+            </div>
+            <button onclick="toggleMenu(false)" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white" aria-label="Fermer le menu"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="flex-1 space-y-1 overflow-y-auto p-4">
+            <a href="#catalogue" onclick="toggleMenu(false)" class="menu-link"><i class="fas fa-th-large"></i> Catalogue</a>
+            <a href="#vente" onclick="toggleMenu(false)" class="menu-link"><i class="fas fa-map-marker-alt"></i> Lieux de vente</a>
+            <a href="#commander" onclick="toggleMenu(false)" class="menu-link"><i class="fas fa-shopping-bag"></i> Commander</a>
+            <a href="#faq" onclick="toggleMenu(false)" class="menu-link"><i class="fas fa-question-circle"></i> FAQ / Questions</a>
+        </nav>
+        <div class="border-t border-white/10 p-4">
+            <button id="menu-cta" type="button" class="flex w-full items-center justify-center gap-2 rounded-full bg-gold py-3 text-sm font-extrabold text-dark transition hover:bg-gold-hover"><i class="fas fa-shopping-bag"></i> Commander maintenant</button>
+        </div>
+    </aside>
+
+    <div id="copy-toast" class="copy-toast rounded-xl px-4 py-3 text-center text-sm font-bold" role="status" aria-live="polite"></div>
 
     <!-- BANNIERE D'ACCUEIL (HERO SECTION) -->
     <section id="hero" class="relative bg-dark text-white p-6 mx-3 my-3 rounded-2xl overflow-hidden shadow-lg border border-gold/30">
@@ -270,7 +295,7 @@
             </div>
 
             <div class="bg-gray-50 p-3 rounded-xl space-y-2 border border-gray-200/60 text-xs">
-                <p><i class="fas fa-store text-gold mr-2"></i> <strong>Point de vente :</strong> MOOD COFFEE, ENER ACI, UIE BADALABOUGOU </p>
+                <p><i class="fas fa-store text-gold mr-2"></i> <strong>Point de vente :</strong> Mood Coffee Aci, Ener Aci, UIE Badalabougou</p>
                 <p><i class="fab fa-snapchat text-gold mr-2"></i> <strong>Snapchat :</strong> BK Collection Mali</p>
                 <p><i class="fas fa-truck text-gold mr-2"></i> <strong>Livraison :</strong> Rapide à domicile ou retrait</p>
             </div>
@@ -351,6 +376,13 @@
                 <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Choisir le paiement</button>
             </div>
             <div id="payment-step-2" class="payment-content hidden mt-5">
+                <div class="rounded-xl border border-gold/40 bg-gold/10 p-4">
+                    <p class="text-sm font-black text-white">Payer en ligne avec PayDunya (Orange Money, Moov, Wave, Carte)</p>
+                    <p class="mt-1 text-xs text-gray-300">Paiement sécurisé sur la page officielle PayDunya.</p>
+                    <button id="paydunya-button" type="button" class="mt-3 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark disabled:cursor-wait disabled:opacity-70">Payer maintenant avec PayDunya</button>
+                    <p id="paydunya-status" class="mt-2 hidden text-center text-xs text-gold" role="status"></p>
+                </div>
+                <div class="my-4 flex items-center gap-3 text-[10px] uppercase tracking-widest text-gray-500"><span class="h-px flex-1 bg-gray-700"></span>ou paiement direct<span class="h-px flex-1 bg-gray-700"></span></div>
                 <p class="mb-3 text-xs text-gray-400">Sélectionnez l'opérateur utilisé et transférez le montant exact.</p>
                 <div class="space-y-2">
                     <div class="payment-method-card rounded-xl border border-gray-200 p-3">
@@ -361,10 +393,11 @@
                         <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="accent-yellow-500"> Wave</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
                         <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
                     </div>
-                                            <div class="payment-method-card rounded-xl border border-gray-200 p-3">
-                                                <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="accent-yellow-500"> MyNita</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
-                                                <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
-                                            </div>                </div>
+                    <div class="payment-method-card rounded-xl border border-gray-200 p-3">
+                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="MyNita" class="accent-yellow-500"> MyNita</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
+                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
+                    </div>
+                </div>
                 <div class="mt-4 rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm">
                     <p class="text-xs text-gray-400">Montant exact</p><p id="payment-amount" class="font-black text-white"></p>
                     <p class="mt-3 text-xs text-gray-400">Motif obligatoire à saisir dans le transfert</p>
@@ -377,8 +410,19 @@
                 <input id="payment-proof" required type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2 text-xs">
                 <label class="mb-1 mt-3 block text-xs font-bold text-gray-400" for="payment-contact">Numéro de téléphone</label>
                 <input id="payment-contact" required type="tel" placeholder="+223 ..." class="w-full rounded-lg border px-3 py-2 text-sm">
-                <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> J'ai payé, envoyer sur Snapchat</button>
+                <button id="payment-submit" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark"><i class="fab fa-snapchat mr-1"></i> J'ai payé, copier et ouvrir Snapchat</button>
             </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION DU RETOUR PAYDUNYA -->
+    <div id="payment-success" class="modal-backdrop hidden fixed inset-0 z-[90] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="payment-success-title">
+        <div class="surface-modal modal-panel w-full max-w-md rounded-2xl p-6 text-center shadow-2xl">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold text-2xl text-dark"><i class="fas fa-check"></i></div>
+            <h3 id="payment-success-title" class="mt-4 text-2xl font-black text-white">Commande confirmée</h3>
+            <p class="mt-2 text-sm text-gray-300">Merci pour votre commande chez Bk Collection Mali. Votre paiement PayDunya a bien été effectué.</p>
+            <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-black text-dark"><i class="fab fa-snapchat"></i> Partager le reçu sur Snapchat</a>
+            <button id="payment-success-close" type="button" class="mt-3 block w-full py-2 text-xs font-bold text-gray-400">Continuer sur le site</button>
         </div>
     </div>
 
@@ -644,9 +688,16 @@
             document.querySelectorAll('.video-tab').forEach(button => button.classList.toggle('active', button === tab));
         });
         document.getElementById('location-video').src = IMG_DIR + VIDEO_FILES[0];
-        function toggleMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
+        function toggleMenu(open) {
+            const show = typeof open === 'boolean' ? open : document.getElementById('mobile-menu').classList.contains('hidden');
+            document.getElementById('mobile-menu').classList.toggle('hidden', !show);
+            document.getElementById('menu-backdrop').classList.toggle('hidden', !show);
         }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(false); });
+        document.getElementById('menu-cta').addEventListener('click', () => {
+            toggleMenu(false);
+            document.getElementById('commander-cta').click();
+        });
         function toggleCart() {
             const open = arguments.length === 0 ? true : arguments[0];
             const drawer = document.getElementById('cart-drawer');
@@ -667,6 +718,11 @@
             paymentItems = items;
             paymentStep = 1;
             paymentReference = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
+            const paydunyaStatus = document.getElementById('paydunya-status');
+            const paydunyaButton = document.getElementById('paydunya-button');
+            paydunyaStatus.classList.add('hidden');
+            paydunyaButton.disabled = false;
+            paydunyaButton.textContent = 'Payer maintenant avec PayDunya';
             renderPaymentSummary();
             toggleCart(false);
             paymentModal.classList.remove('hidden');
@@ -737,6 +793,83 @@
         document.getElementById('copy-reference').addEventListener('click', () => {
             copyText(document.getElementById('payment-reference').textContent, document.getElementById('copy-reference'));
         });
+        document.getElementById('paydunya-button').addEventListener('click', async () => {
+            const status = document.getElementById('paydunya-status');
+            const button = document.getElementById('paydunya-button');
+            const customerName = document.getElementById('payment-customer-name').value.trim();
+            const customerPhone = document.getElementById('payment-customer-phone').value.trim();
+            if (!customerName || !customerPhone) {
+                (customerName ? document.getElementById('payment-customer-phone') : document.getElementById('payment-customer-name')).focus();
+                return;
+            }
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Connexion sécurisée à PayDunya...';
+            status.textContent = 'Création de votre facture sécurisée...';
+            status.classList.remove('hidden');
+            try {
+                const response = await fetch('/api/paydunya', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        total_amount: paymentTotal(),
+                        customer_name: customerName,
+                        customer_phone: customerPhone,
+                        items: paymentItems.map(item => ({
+                            name: item.product.name,
+                            size: String(item.size),
+                            quantity: item.quantity,
+                            unit_price: item.product.price
+                        }))
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.payment_url) {
+                    throw new Error(result.error || 'Impossible de créer la facture PayDunya.');
+                }
+                status.textContent = 'Redirection vers la page de paiement PayDunya...';
+                window.location.assign(result.payment_url);
+            } catch (error) {
+                status.textContent = error.message || 'PayDunya est momentanément indisponible.';
+                button.disabled = false;
+                button.textContent = 'Réessayer avec PayDunya';
+            }
+        });
+        function showToast(text) {
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise((resolve, reject) => {
+                const area = document.createElement('textarea');
+                area.value = text;
+                area.style.position = 'fixed';
+                area.style.opacity = '0';
+                document.body.appendChild(area);
+                area.select();
+                const ok = document.execCommand('copy');
+                area.remove();
+                ok ? resolve() : reject(new Error('copy failed'));
+            });
+        }
+        function buildOrderMessage(contact, method) {
+            const lines = paymentItems.map(item => `- ${item.product.name} | Pointure ${item.size} | Qté ${item.quantity} | ${formatPrice(item.product.price * item.quantity)}`);
+            return [
+                'Bonjour Bk Collection Mali, voici ma commande :',
+                ...lines,
+                `Total : ${formatPrice(paymentTotal())}`,
+                `Référence : ${paymentReference}`,
+                `Paiement : ${method}`,
+                `Client : ${document.getElementById('payment-customer-name').value.trim()}`,
+                `Téléphone : ${contact}`,
+                "Je vous envoie ma capture d'écran de paiement."
+            ].join('\n');
+        }
         document.getElementById('payment-submit').addEventListener('click', () => {
             const contact = document.getElementById('payment-contact').value.trim();
             const proof = document.getElementById('payment-proof').files[0];
@@ -744,10 +877,15 @@
                 (contact ? document.getElementById('payment-proof') : document.getElementById('payment-contact')).focus();
                 return;
             }
-            const summary = paymentItems.map(item => `${item.product.name} x${item.quantity}`).join(', ');
-            const message = `Bonjour Bk Collection Mali. J'ai payé. Référence : ${paymentReference}. Commande : ${summary}. Total : ${formatPrice(paymentTotal())}. Téléphone : ${contact}. Capture : ${proof.name}.`;
-            window.alert(`Merci ! Votre demande de validation ${paymentReference} est prête. Vous allez être redirigé vers Snapchat.`);
-            window.open(`https://snapchat.com/t/tqxObnlA?text=${encodeURIComponent(message)}`, '_blank');
+            const method = (document.querySelector('input[name="payment-method"]:checked') || {}).value || 'Paiement direct';
+            const message = buildOrderMessage(contact, method);
+            // La copie et l'ouverture doivent partir du même clic pour ne pas être bloquées par le navigateur.
+            const copied = copyToClipboard(message);
+            window.open('https://snapchat.com/t/tqxObnlA', '_blank', 'noopener');
+            copied.then(
+                () => showToast('Commande copiée ! Collez-la dans le chat'),
+                () => window.prompt('Copiez votre commande puis collez-la dans le chat Snapchat :', message)
+            );
             closePaymentTunnel();
         });
         document.getElementById('checkout-button').addEventListener('click', () => openPaymentTunnel(cartItems));
@@ -757,6 +895,16 @@
                 return;
             }
             document.getElementById('catalogue').scrollIntoView({ behavior: 'smooth' });
+        });
+        const paymentSuccess = document.getElementById('payment-success');
+        if (new URLSearchParams(window.location.search).get('status') === 'success') {
+            paymentSuccess.classList.remove('hidden');
+            paymentSuccess.classList.add('flex');
+        }
+        document.getElementById('payment-success-close').addEventListener('click', () => {
+            paymentSuccess.classList.add('hidden');
+            paymentSuccess.classList.remove('flex');
+            window.history.replaceState({}, document.title, window.location.pathname);
         });
         function renderCart() {
             const container = document.getElementById('cart-items');
