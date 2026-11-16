@@ -325,7 +325,7 @@
                 <p><i class="fas fa-truck text-gold mr-2"></i> <strong>Livraison :</strong> Rapide à domicile ou retrait</p>
             </div>
 
-            <a href="https://snapchat.com/t/tqxObnlA"
+            <a href="https://www.snapchat.com/add/bkcollection1"
                target="_blank"
                class="w-full bg-dark text-gold font-bold text-xs py-2.5 rounded-xl flex items-center justify-center space-x-2 border border-gold/40">
                 <i class="fab fa-snapchat text-yellow-300 text-sm"></i>
@@ -362,9 +362,7 @@
                 <div id="modal-bonus" class="bonus-banner mt-3 hidden"><span>🎁 Bonus : 6 autocollants (Pinks) offerts pour chaque paire de Crocs achetée !</span></div>
                 <div class="mt-4">
                     <label for="modal-size" class="mb-1 block text-xs font-bold text-gray-600">Pointure</label>
-                    <select id="modal-size" class="dark-control w-full rounded-lg border px-3 py-2 text-sm">
-                        <option value="">Choisir une pointure</option>
-                    </select>
+                    <div id="modal-sizes" class="space-y-1"></div>
                 </div>
                 <div class="mt-3">
                     <label for="modal-quantity" class="mb-1 block text-xs font-bold text-gray-600">Quantité</label>
@@ -400,6 +398,9 @@
                     <input id="payment-customer-name" required type="text" placeholder="Nom complet" class="dark-control rounded-lg border px-3 py-2 text-sm">
                     <input id="payment-customer-phone" required type="tel" placeholder="Téléphone (+223)" class="dark-control rounded-lg border px-3 py-2 text-sm">
                 </div>
+                <div class="mt-3">
+                    <input id="payment-customer-address" required type="text" placeholder="Adresse / Quartier de livraison" class="w-full dark-control rounded-lg border px-3 py-2 text-sm">
+                </div>
                 <button id="payment-next-1" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">Choisir le paiement</button>
             </div>
             <div id="payment-step-2" class="payment-content hidden mt-5">
@@ -410,8 +411,8 @@
                         <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
                     </div>
                     <div class="payment-method-card rounded-xl border border-gray-200 p-3">
-                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="accent-yellow-500"> Wave</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 76 76 73 54" type="button">Copier</button></div>
-                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 76 76 73 54</p>
+                        <div class="flex items-center justify-between gap-2"><label class="flex items-center gap-2 text-sm font-bold"><input type="radio" name="payment-method" value="Wave" class="accent-yellow-500"> Wave</label><button class="copy-merchant rounded-lg border border-gold/40 px-2 py-1 text-xs text-gold" data-number="+223 79 87 66 84" type="button">Copier</button></div>
+                        <p class="merchant-number mt-2 text-xs text-gray-300">+223 79 87 66 84</p>
                     </div>
                 </div>
                 <div class="mt-4 rounded-xl border border-gold/30 bg-gold/10 p-4 text-sm">
@@ -422,6 +423,10 @@
                 <button id="payment-next-2" class="mt-4 w-full rounded-xl bg-gold py-3 text-sm font-black text-dark">J'ai effectué le transfert</button>
             </div>
             <div id="payment-step-3" class="payment-content hidden mt-5">
+                <div class="rounded-lg border border-gold/30 bg-gold/10 p-3 mb-4">
+                    <p class="text-xs font-bold text-gold mb-2">⚠️ Après envoi du texte sur Snapchat :</p>
+                    <p class="text-xs text-gray-300 leading-relaxed">Envoyez votre capture d'écran de paiement directement dans la discussion Snapchat. Les navigateurs mobiles ne permettent pas d'attacher automatiquement une image au message.</p>
+                </div>
                 <label class="mb-1 block text-xs font-bold text-gray-400" for="payment-proof">Capture d'écran du paiement</label>
                 <input id="payment-proof" required type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2 text-xs">
                 <label class="mb-1 mt-3 block text-xs font-bold text-gray-400" for="payment-contact">Numéro de téléphone</label>
@@ -511,30 +516,28 @@
         // ou status: 'coming-back' (badge « Bientôt de retour »). Retirez la ligne pour le remettre en vente.
         const STOCK_LABELS = { 'out-of-stock': 'Indisponible', 'coming-back': 'Bientôt de retour' };
         const PRODUCTS = [
-            { id: 'spiderman-rouge', name: 'Crocs Spider-Man Rouge', category: 'crocs', price: 18000, images: ['crocs-spiderman-rouge-1.jpg.jpg', 'crocs-spiderman-rouge-2.jpg.jpg'], badge: { text: 'Nouveau' } },
-            { id: 'spiderman-noir', name: 'Crocs Spider-Man Noir', category: 'crocs', price: 18000, images: ['crocs-spiderman-noir-1.jpg.jpg', 'crocs-spiderman-noir-2.jpg.jpg'], badge: { text: 'Tendance', style: 'dark' } },
-            { id: 'batman', name: 'Crocs Batman', category: 'crocs', price: 18000, images: ['crocs-batman-1.jpg.jpg', 'crocs-batman-2.jpg.jpg'] },
-            { id: 'minecraft', name: 'Crocs Minecraft', category: 'crocs', price: 18000, images: ['crocs-minecraft.jpg.jpg', 'crocs-minecraft-1.jpg.jpg'] },
-            { id: 'simpsons', name: 'Crocs Simpsons', category: 'crocs', price: 18000, images: ['crocs-simpsons-1.jpg.jpg', 'crocs-simpsons-2.jpg.jpg'] },
-            { id: 'cars-mcqueen', name: 'Crocs Lightning McQueen', category: 'crocs', price: 20000, images: ['crocs-classic-1.jpg.jpg', 'crocs-classic-2.jpg.jpg'], badge: { text: 'Limited stock', style: 'promo' } },
-            { id: 'classic-noir', name: 'Crocs Classic Noir', category: 'crocs', price: 15000, images: ['crocs-classic-black.jpg.jpg', 'crocs-classic-black-1.jpg.jpg'] },
-            { id: 'classic-blanc', name: 'Crocs Classic Blanc', category: 'crocs', price: 15000, images: ['crocs-classic-white.jpg.jpg', 'crocs-classic-white-1.jpg.jpg'] },
-            { id: 'classic-rose', name: 'Crocs Classic Rose', category: 'crocs', price: 15000, images: ['crocs-classic-pink.jpg.jpg', 'crocs-classic-pink-1.jpg.jpg'] },
-            { id: 'classic-rouge', name: 'Crocs Classic Rouge', category: 'crocs', price: 15000, images: ['crocs-classic-red.jpg.jpg', 'crocs-classic-red-1.jpg.jpg'] },
-            { id: 'classic-calcite', name: 'Crocs Classic Bleu Calcite', category: 'crocs', price: 15000, images: ['crocs-classic-blue-calcite.jpg.jpg'] },
-            { id: 'classic-bleu', name: 'Crocs Classic Bleu', category: 'crocs', price: 15000, images: ['crcos-classic-blue.jpg.jpg', 'crcos-classic-blue-1.jpg.jpg'] },
-            { id: 'echo-noir', name: 'Crocs Echo Noir', category: 'crocs', price: 17000, images: ['crocs-echo-black.jpg.jpg', 'crocs-echo-black-1.jpg.jpg'] },
+            { id: 'spiderman-rouge', name: 'Crocs Spider-Man Rouge', category: 'crocs', price: 20000, images: ['crocs-spiderman-rouge-1.jpg.jpg', 'crocs-spiderman-rouge-2.jpg.jpg'], badge: { text: 'Nouveau' } },
+            { id: 'spiderman-noir', name: 'Crocs Spider-Man Noir', category: 'crocs', price: 20000, images: ['crocs-spiderman-noir-1.jpg.jpg', 'crocs-spiderman-noir-2.jpg.jpg'], badge: { text: 'Tendance', style: 'dark' } },
+            { id: 'batman', name: 'Crocs Batman', category: 'crocs', price: 22000, images: ['crocs-batman-1.jpg.jpg', 'crocs-batman-2.jpg.jpg'] },
+            { id: 'minecraft', name: 'Crocs Minecraft', category: 'crocs', price: 22000, images: ['crocs-minecraft.jpg.jpg', 'crocs-minecraft-1.jpg.jpg'] },
+            { id: 'simpsons', name: 'Crocs Simpsons', category: 'crocs', price: 15000, images: ['crocs-simpsons-1.jpg.jpg', 'crocs-simpsons-2.jpg.jpg'] },
+            { id: 'cars-mcqueen', name: 'Crocs Lightning McQueen', category: 'crocs', price: 15000, images: ['crocs-classic-1.jpg.jpg', 'crocs-classic-2.jpg.jpg'], badge: { text: 'Limited stock', style: 'promo' } },
+            { id: 'classic-noir', name: 'Crocs Classic Noir', category: 'crocs', price: 10000, images: ['crocs-classic-black.jpg.jpg', 'crocs-classic-black-1.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'classic-blanc', name: 'Crocs Classic Blanc', category: 'crocs', price: 10000, images: ['crocs-classic-white.jpg.jpg', 'crocs-classic-white-1.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'classic-rose', name: 'Crocs Classic Rose', category: 'crocs', price: 10000, images: ['crocs-classic-pink.jpg.jpg', 'crocs-classic-pink-1.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'classic-rouge', name: 'Crocs Classic Rouge', category: 'crocs', price: 10000, images: ['crocs-classic-red.jpg.jpg', 'crocs-classic-red-1.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'classic-calcite', name: 'Crocs Classic Bleu Calcite', category: 'crocs', price: 10000, images: ['crocs-classic-blue-calcite.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'classic-bleu', name: 'Crocs Classic Bleu', category: 'crocs', price: 10000, images: ['crcos-classic-blue.jpg.jpg', 'crcos-classic-blue-1.jpg.jpg'], bonus: 'jibbitz' },
+            { id: 'echo-noir', name: 'Crocs Echo Noir', category: 'crocs', price: 22000, images: ['crocs-echo-black.jpg.jpg', 'crocs-echo-black-1.jpg.jpg'] },
             { id: 'yukon-noir', name: 'Crocs Yukon Noir', category: 'crocs', price: 20000, images: ['télécharger (16).jpg'], badge: { text: 'Nouveau' } },
-            { id: 'birkenstock-boston', name: 'Birkenstock Boston Noir', category: 'claquettes', price: 20000, images: ['birken-noir-1.jpg.jpg'] },
-            { id: 'slide-noire', name: 'Slide noire', category: 'claquettes', price: 8000, images: ['slide-black.jpg.jpg', 'slide-black-1.jpg.jpg'], badge: { text: 'Tendance' } },
-            { id: 'nike-calm-slide', name: 'Claquette Nike Calm noire', category: 'claquettes', price: 10000, images: ['sandal-nike-1.jpg.jpg'], badge: { text: 'Nouveau', style: 'dark' } },
-            { id: 'nike-calm-mule', name: 'Mule Nike Calm noire', category: 'claquettes', price: 12000, images: ['sandal-nike-2.jpg.jpg'] },
-            { id: 'nike-victori', name: 'Claquette Nike Victori', category: 'claquettes', price: 10000, images: ['télécharger (17).jpg'], badge: { text: 'Populaire' } },
-            { id: 'jibbitz-classic', name: 'Jibbitz classique', category: 'jibbitz', price: 2000, images: ['jibbitz.png.jpg'] },
-            { id: 'chaussettes-nike-blanches', name: 'Chaussettes Nike blanches', category: 'chaussettes', price: 3000, images: ['chaussettes-blanches-nike.jpg.jpg'] },
-            { id: 'chaussettes-nike-noires', name: 'Chaussettes Nike noires', category: 'chaussettes', price: 3000, images: ['chaussettes-noirs-nike.jpg.jpg'] },
-            { id: 'chaussettes-blanches', name: 'Chaussettes blanches', category: 'chaussettes', price: 1500, images: ['chaussettes-blanches.jpg.jpg'] },
-            { id: 'chaussettes-noires', name: 'Chaussettes noires', category: 'chaussettes', price: 1500, images: ['chaussettes-noires.jpg.jpg'] }
+            { id: 'birkenstock-boston', name: 'Birkenstock Boston Noir', category: 'claquettes', price: 25000, images: ['birken-noir-1.jpg.jpg'] },
+            { id: 'slide-noire', name: 'Slide noire', category: 'claquettes', price: 10000, images: ['slide-black.jpg.jpg', 'slide-black-1.jpg.jpg'], badge: { text: 'Tendance' }, bonus: 'socks' },
+            { id: 'nike-calm-slide', name: 'Claquette Nike Calm noire', category: 'claquettes', price: 25000, images: ['sandal-nike-1.jpg.jpg'], badge: { text: 'Nouveau', style: 'dark' } },
+            { id: 'nike-calm-mule', name: 'Mule Nike Calm noire', category: 'claquettes', price: 25000, images: ['sandal-nike-2.jpg.jpg'] },
+            { id: 'chaussettes-nike-blanches', name: 'Chaussettes Nike blanches', category: 'chaussettes', price: 1000, images: ['chaussettes-blanches-nike.jpg.jpg'] },
+            { id: 'chaussettes-nike-noires', name: 'Chaussettes Nike noires', category: 'chaussettes', price: 1000, images: ['chaussettes-noirs-nike.jpg.jpg'] },
+            { id: 'chaussettes-blanches', name: 'Chaussettes blanches', category: 'chaussettes', price: 1000, images: ['chaussettes-blanches.jpg.jpg'] },
+            { id: 'chaussettes-noires', name: 'Chaussettes noires', category: 'chaussettes', price: 1000, images: ['chaussettes-noires.jpg.jpg'] }
         ];
 
         const formatPrice = n => n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ') + ' FCFA';
@@ -607,7 +610,7 @@
                 btn.lastChild.textContent = 'RUPTURE TEMPORAIRE';
                 const note = document.createElement('p');
                 note.className = 'stock-note';
-                note.innerHTML = 'Retour en stock ? <a href="https://snapchat.com/t/tqxObnlA" target="_blank" rel="noopener">Demandez-nous sur Snapchat</a>';
+                note.innerHTML = 'Retour en stock ? <a href="https://www.snapchat.com/add/bkcollection1" target="_blank" rel="noopener">Demandez-nous sur Snapchat</a>';
                 const footer = document.createElement('div');
                 footer.append(btn, note);
                 card.append(info, footer);
@@ -652,21 +655,39 @@
         let cartItems = [];
         let selectedProduct = null;
         let selectedImage = 0;
+        let selectedSize = '';
         const modal = document.getElementById('product-modal');
         const modalImage = document.getElementById('modal-product-image');
-        const modalSize = document.getElementById('modal-size');
-        for (let size = 36; size <= 45; size++) modalSize.insertAdjacentHTML('beforeend', `<option value="${size}">${size}</option>`);
+
+        function renderSizes(product) {
+            const container = document.getElementById('modal-sizes');
+            const unavailable = product.unavailableSizes || [];
+            const sizes = [];
+            for (let s = 36; s <= 45; s++) sizes.push(String(s));
+            container.innerHTML = sizes.map(size => {
+                const isUnavailable = unavailable.includes(size);
+                return `<button type="button" class="size-btn ${isUnavailable ? 'disabled' : ''}" data-size="${size}" ${isUnavailable ? 'disabled' : ''} style="padding: 8px 12px; font-size: 12px; font-weight: 600; border-radius: 8px; border: 1px solid ${isUnavailable ? '#4a4a4a' : '#3a3a3a'}; background: ${isUnavailable ? '#1a1a1a' : '#202020'}; color: ${isUnavailable ? '#666' : '#f5f5f5'}; cursor: ${isUnavailable ? 'not-allowed' : 'pointer'}; text-decoration: ${isUnavailable ? 'line-through' : 'none'};">${isUnavailable ? '✕ ' : ''}${size}</button>`;
+            }).join('');
+            container.querySelectorAll('button:not(:disabled)').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    container.querySelectorAll('button').forEach(b => b.style.background = b.disabled ? '#1a1a1a' : '#202020');
+                    e.target.style.background = '#D4AF37';
+                    selectedSize = e.target.dataset.size;
+                });
+            });
+        }
 
         function openProductModal(product) {
             if (STOCK_LABELS[product.status]) return;
             selectedProduct = product;
+            selectedSize = '';
             selectedImage = 0;
             modalImage.src = IMG_DIR + product.images[selectedImage];
             modalImage.alt = product.name;
             document.getElementById('modal-product-name').textContent = product.name;
             document.getElementById('modal-product-price').textContent = formatPrice(product.price);
-            modalSize.value = '';
-            document.getElementById('modal-bonus').classList.toggle('hidden', product.category !== 'crocs');
+            document.getElementById('modal-bonus').classList.toggle('hidden', product.bonus !== 'jibbitz');
+            renderSizes(product);
             document.getElementById('modal-quantity').value = 1;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -678,8 +699,8 @@
             document.body.classList.remove('overflow-hidden');
         }
         function getOrderDetails() {
-            const size = modalSize.value;
-            if (!size) { modalSize.focus(); return null; }
+            const size = selectedSize;
+            if (!size) { document.querySelector('[data-size]')?.parentElement.focus(); return null; }
             const quantity = Math.max(1, Number(document.getElementById('modal-quantity').value) || 1);
             return { size, quantity, total: selectedProduct.price * quantity };
         }
@@ -748,7 +769,7 @@
             paymentStep = 1;
             paymentReference = `BK-${Math.floor(1000 + Math.random() * 9000)}`;
             renderPaymentSummary();
-            document.getElementById('payment-bonus').classList.toggle('hidden', !items.some(item => item.product.category === 'crocs'));
+            toggleCart(false);
             paymentModal.classList.remove('hidden');
             paymentModal.classList.add('flex');
             document.body.classList.add('overflow-hidden');
@@ -789,8 +810,9 @@
         document.getElementById('payment-next-1').addEventListener('click', () => {
             const customerName = document.getElementById('payment-customer-name').value.trim();
             const customerPhone = document.getElementById('payment-customer-phone').value.trim();
-            if (!customerName || !customerPhone) {
-                (customerName ? document.getElementById('payment-customer-phone') : document.getElementById('payment-customer-name')).focus();
+            const customerAddress = document.getElementById('payment-customer-address').value.trim();
+            if (!customerName || !customerPhone || !customerAddress) {
+                (customerName ? (customerPhone ? document.getElementById('payment-customer-address') : document.getElementById('payment-customer-phone')) : document.getElementById('payment-customer-name')).focus();
                 return;
             }
             paymentStep = 2;
@@ -842,16 +864,22 @@
         }
         function buildOrderMessage(contact, method) {
             const lines = paymentItems.map(item => `- ${item.product.name} | Pointure ${item.size} | Qté ${item.quantity} | ${formatPrice(item.product.price * item.quantity)}`);
+            const bonuses = [];
+            if (paymentItems.some(item => item.product.bonus === 'jibbitz')) bonuses.push('+ 6 autocollants offerts');
+            if (paymentItems.some(item => item.product.bonus === 'socks')) bonuses.push('+ 1 chaussette offerte');
+            const address = document.getElementById('payment-customer-address').value.trim();
             return [
-                'Bonjour Bk Collection Mali, voici ma commande :',
+                'Bonjour BK Collection, voici ma commande :',
                 ...lines,
                 `Total : ${formatPrice(paymentTotal())}`,
                 `Référence : ${paymentReference}`,
                 `Paiement : ${method}`,
                 `Client : ${document.getElementById('payment-customer-name').value.trim()}`,
                 `Téléphone : ${contact}`,
+                `Adresse/Quartier : ${address}`,
+                (bonuses.length ? `Bonus : ${bonuses.join(', ')}` : ''),
                 "Je vous envoie ma capture d'écran de paiement."
-            ].join('\n');
+            ].filter(Boolean).join('\n');
         }
         document.getElementById('payment-submit').addEventListener('click', () => {
             const contact = document.getElementById('payment-contact').value.trim();
@@ -864,7 +892,7 @@
             const message = buildOrderMessage(contact, method);
             // La copie et l'ouverture doivent partir du même clic pour ne pas être bloquées par le navigateur.
             const copied = copyToClipboard(message);
-            window.open('https://snapchat.com/t/tqxObnlA', '_blank', 'noopener');
+            window.open('https://www.snapchat.com/add/bkcollection1', '_blank', 'noopener');
             copied.then(
                 () => showToast('Commande copiée ! Collez-la dans le chat'),
                 () => window.prompt('Copiez votre commande puis collez-la dans le chat Snapchat :', message)
