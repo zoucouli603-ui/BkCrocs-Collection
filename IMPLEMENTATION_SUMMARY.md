@@ -8,28 +8,24 @@ Complete implementation of an e-commerce website for BK Collection Mali, a Crocs
 ## ✅ Completed Features
 
 ### 1. **Product Catalog Management**
-- **22 Products** in the catalog with the following categories:
-  - **Crocs**: 10 models (Spiderman Rouge/Noir, Batman, Minecraft, Simpson, McQueen, Écho Noir, Classic variants)
+- **15 Products** in the catalog with the following categories:
+  - **Crocs**: 8 models (Spiderman Rouge/Noir, Classic variants)
   - **Claquettes**: 3 models (Nike Calm Noir, Nike Claquettes, Slide Noir)
-  - **Chaussettes**: 2 types
-  - **Accessories**: Birkenstock
+  - **Chaussettes**: 4 products
   
 - **Removed items**:
   - Claquette Nike Victori
   - Jibbitz Classique
   - All paid Jibbitz packs (rose, halloween, lettres)
+  - Crocs Echo Noir, Batman, Minecraft, Simpsons, Yukon Noir, Lightning McQueen, Birkenstock Noir
 
 ### 2. **Updated Pricing** (All in FCFA)
 | Product | Price |
 |---------|-------|
 | Crocs Spiderman Rouge/Noir | 20,000 |
-| Crocs Batman/Minecraft | 22,000 |
-| Crocs Simpson/McQueen | 15,000 |
-| Crocs Écho Noir | 22,000 |
 | Crocs Classic (all colors) | 10,000 |
 | Claquettes Nike Calm/Nike | 25,000 |
 | Slide Noir | 10,000 |
-| Birkenstock | 25,000 |
 | Chaussettes | 1,000 |
 
 ### 3. **Bonus System**
@@ -126,7 +122,7 @@ Je vous envoie ma capture d'écran de paiement.
 
 ### **templates/index.html** - Core Application
 **Changes made:**
-1. PRODUCTS array: 22 products with updated prices and bonus properties
+1. PRODUCTS array: 15 products with updated prices and bonus properties
 2. Size selection: Refactored from `<select>` to button grid with `renderSizes()` function
 3. Payment form: Added `payment-customer-address` field (required)
 4. Payment step 3: Added payment screenshot reminder text
@@ -200,7 +196,7 @@ Je vous envoie ma capture d'écran de paiement.
 
 ## ✅ Testing Checklist
 
-- [x] All 22 products display correctly
+- [x] All 15 products display correctly
 - [x] Prices updated across all categories
 - [x] Out-of-stock products show badges and disabled buttons
 - [x] Size selection works with button grid interface
